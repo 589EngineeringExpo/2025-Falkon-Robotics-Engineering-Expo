@@ -3,24 +3,48 @@
 const express = require('express'); // Server framework
 const helmet = require('helmet'); // HTTP security headers middleware
 const morgan = require('morgan'); // HTTP logging middleware
+const cors = require('cors'); // Allow cross-origin requests
 const rateLimit = require('express-rate-limit'); // Rate limiting middleware
+const swaggerUi = require('swagger-ui-express'); // API documentation, accessible at /api-docs
+const swaggerJsdoc = require('swagger-jsdoc'); // Generates documentation from comments in the code
+const path = require('path');
 
 const routes = require('./routes'); // Importing routes from a separate folder. See routes/index.js
 const { port, apiPrefix, baseURL, rateLimitIntervals, rateLimitMaxRequests, rateLimitMaxSize, node_env } = require('./config/settings'); // Importing settings
+const { connect } = require('mongoose');
+const connectDB = require('./db/database').connectDB; // Database connection
+
+const swaggerOptions = {  // Options for automatic API documentation
+    swaggerDefinition: {
+        openapi: '3.0.0',
+        info: {
+            title: 'Engineering Expo API',
+        },
+        servers: [{ url: 'http://localhost:' + port }],
+    },
+    apis: [path.resolve(__dirname, './routes/*.js')],
+};
+const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 
-app.use(helmet()); // Use Helmet to set secure HTTP headers
-app.use(morgan('combined')); // Use Morgan for logging HTTP requests
-app.use(express.json({ limit: rateLimitMaxSize })); // Parse JSON request bodies
-app.use(express.urlencoded({ extended: true, limit: rateLimitMaxSize })); // Parse URL-encoded request bodies
+app.use(helmet());
+app.use(morgan('combined'));
+app.use(cors());
+app.use(express.json({ limit: rateLimitMaxSize }));
+app.use(express.urlencoded({ extended: true, limit: rateLimitMaxSize }))
 app.use(rateLimit({
-    windowMs: rateLimitIntervals * 60 * 1000, // Limit each IP per ? minutes
-    max: rateLimitMaxRequests, // Limit each IP to ? requests per windowMs
+    windowMs: rateLimitIntervals * 60 * 1000,
+    max: rateLimitMaxRequests,
     message: `Too many requests from this IP. Try again in ${rateLimitIntervals} minutes.`
-})); // Apply rate limiting to all requests
+}));
+if (node_env === 'development') {
+    app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerDocs));
+    console.log(`Swagger docs available at ${baseURL}/api-docs`);
+}
 
-app.use(apiPrefix, routes); // Use the imported routes with the specified API prefix
+connectDB(); // Establish database connection
+app.use(apiPrefix, routes);
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
@@ -28,6 +52,6 @@ app.listen(port, () => {
     console.log(`API Prefix is set to ${apiPrefix}`);
     console.log(`Environment: ${node_env}`);
     if (node_env === 'development') {
-        console.log('Running in development mode. CHANGE TO PRODUCTION IF YOU ARE IN PRODUCTION!');
+        console.log('Running in development mode. CHANGE TO PRODUCTION IF YOU ARE IN PRODUCTION IN THE .ENV FILE!');
     }
 });
