@@ -50,8 +50,17 @@ const volunteerSchema = new mongoose.Schema({
     },
 });
 
+// Bearer Token Schema
+
+const bearerTokenSchema = new mongoose.Schema({
+    token: { type: String, required: true, unique: true },
+    createdAt: { type: Date, default: Date.now},
+    assignedTo: { type: String, required: true, default: "Unnamed" },
+})
+
 module.exports = {
     connectDB,
     Booth: mongoose.model("Booth", boothSchema),
     Volunteer: mongoose.model("Volunteer", volunteerSchema),
+    BearerToken: mongoose.model("BearerToken", bearerTokenSchema),
 };
