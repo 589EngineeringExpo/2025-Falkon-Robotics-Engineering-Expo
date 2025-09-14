@@ -28,99 +28,6 @@
 
 /**
  * @swagger
- * /api/booths/create:
- *   post:
- *     summary: Create a new booth
- *     tags: [Booths]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - id
- *               - name
- *               - description
- *               - location
- *               - boothRunners
- *               - boothImage
- *               - boothCategory
- *             properties:
- *               id:
- *                 type: integer
- *               name:
- *                 type: string
- *               description:
- *                 type: string
- *               location:
- *                 type: array
- *                 items:
- *                   type: object
- *                   properties:
- *                     x:
- *                       type: integer
- *                     y:
- *                       type: integer
- *               boothRunners:
- *                 type: array
- *                 items:
- *                   type: string
- *               boothImage:
- *                 type: string
- *                 format: uri
- *               boothCategory:
- *                 type: integer
- *                 description: 0 - Community, 1 - Food, 2 - Activities, 3 - Popups
- *               organization:
- *                 type: string
- *               menu:
- *                 type: array
- *                 items:
- *                   type: object
- *                   additionalProperties:
- *                     type: number
- *               activities:
- *                 type: object
- *                 properties:
- *                   intendedAges:
- *                     type: array
- *                     items:
- *                       type: integer
- *                     example: [0, 99]
- *                   queue:
- *                     type: integer
- *                   waitPerPerson:
- *                     type: integer
- *               popups:
- *                 type: object
- *                 properties:
- *                   startTime:
- *                     type: string
- *                     format: date-time
- *                   endTime:
- *                     type: string
- *                     format: date-time
- *     responses:
- *       201:
- *         description: Booth created successfully
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *       400:
- *         description: Invalid input
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- */
-
-/**
- * @swagger
  * /api/booths/all:
  *   get:
  *     summary: Get all booths
@@ -193,12 +100,6 @@ const { createBooth, getAllBooths, getBoothById } = require("../db/booths");
 router.get("/", (req, res) => {
     res.json({ message: "Booths API endpoint!"});
 });
-
-router.post("/create", (req, res) => {
-    createBooth(req.body)
-        .then(booth => res.status(201).json(booth))
-        .catch(err => res.status(400).json({ error: err.message }));
-})
 
 router.get("/all", (req, res) => {
     getAllBooths()
