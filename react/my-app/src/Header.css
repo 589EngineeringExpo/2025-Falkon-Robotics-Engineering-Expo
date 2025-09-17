@@ -1,0 +1,9 @@
+.header {
+  background-color: #00008b;
+  padding: 10px 20px;
+  color: rgb(0, 0, 255);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
