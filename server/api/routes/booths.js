@@ -61,6 +61,7 @@
  *     parameters:
  *       - in: query
  *         name: id
+ *         Volunteer name: id
  *         schema:
  *           type: string
  *         required: true

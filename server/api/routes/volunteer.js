@@ -94,8 +94,8 @@ const router = express.Router();
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer').Strategy;
 
-//token might be over kill \_(._.)_/ idk
-// const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
+
+const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
 
 
 
