@@ -32,16 +32,16 @@ body {
 }
 .row {
     display: flex;
-    flex-direction: column;
+    flex-direction: center;
     width: auto;
-    border: 1px solid rgba(0, 0, 255, 0);
+    border: 3px solid rgba(255, 0, 0, 0);
 }
 .flex-item {
     background-color: rgba(255, 99, 71, 0);
     padding: 5px;
     width: 20px;
     height: 20px;
-    margin: 10px;
+    margin: 20px;
     line-height: 20px;
     color: white;
     font-weight: bold;
@@ -56,7 +56,7 @@ body {
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 20vmin);
-  color: white;
+  color: #ffffff;
 }
 
 .App-link {

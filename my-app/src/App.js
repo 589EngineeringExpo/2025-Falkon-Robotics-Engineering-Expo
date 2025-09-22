@@ -2,24 +2,23 @@
 import './App.css';
 import Header from './components/Header.js';
 import OIP from './assets/OIP.webp';
-
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import  AboutPage  from './aboutpage.js';
+import  Homepage  from './Homepage.js';
+import  Event  from './Event.js';
 function App() {
     return (
-        <div className="app-container">
-            <Header />
-            {<div> About us!</div>}
-        <div className="flex-container">
-    <div className="row">
-        <span className="flex-item">Welcome!</span>
-        </div>
-        <div className="row">
-            
-        <img src={OIP} className="UHHHTEMP" alt="TEMP" style={{ opacity: 0.01 }} />
-        </div>
-</div>
-  </div>
-
-        
+//DONOTTOUCHPLEASETHISISHELDUPBYGLUE
+    <span>
+      <Router>
+        <Routes>
+          <Route path="/"element ={<Homepage/>} />
+          <Route path="aboutpage"element ={<AboutPage/>} />
+          <Route path="Event"element ={<Event/>} />
+        </Routes>
+      </Router>
+    </span>
+  
     );
 }
 
