@@ -93,41 +93,16 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer').Strategy;
-const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
-
-
+//const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
+//the stuff above will be done by "gods" itll be in the god.js file
 
 const { createVolunteer, getAllvolunteer, getVolunteerById } = require("../db/volunteers");
 //im assuming this just connects it?
 router.get("/", (req, res) => {
     res.json({ message: "Volunteer API endpoint!"});
 });
-//gets all volunteers O.o ik its shocking
-router.get("/all", (req, res) => {
-    getAllvolunteer()
-        .then(volunteer => res.status(200).json(volunteers))
-        .catch(err => res.status(500).json({ error: err.message }));
-});
-
-//creates a volunteer
-router.get("/all", (req, res) => {
-    createVolunteer()
-        
-});
-
-//gets a single volunteer
-router.get("/get", (req, res) => {
-    const id = req.query.id;
-    getVolunteerById(id).then(volunteer => {
-        if (volunteer) {
-            res.status(200).json(volunteer);
-        }
-        else {
-            res.status(404).json({ error: "volunteer not found" });
-        }
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
-});
+//get all volunteer func will be god only 
+//same with get 1 volunteer
 
 module.exports = router;
 

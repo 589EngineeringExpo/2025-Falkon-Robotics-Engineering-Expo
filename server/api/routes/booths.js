@@ -60,7 +60,7 @@
  *     tags: [Booths]
  *     parameters:
  *       - in: query
- *         name: id
+ *         name: string
  *         Volunteer name: id
  *         schema:
  *           type: string
