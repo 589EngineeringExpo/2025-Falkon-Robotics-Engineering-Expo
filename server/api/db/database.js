@@ -1,6 +1,9 @@
 require("dotenv").config(); // Getting settings from .env file
 const mongoose = require("mongoose");
-
+//seting stuff ^ + importing\
+//everything below is just how to store stuff
+//connectDB is just a way to show if connection works or doesnt
+//console.log just prints the following quote in console 
 async function connectDB(){
     const mongoURI = process.env.MONGODB_URI;
     try {
@@ -11,6 +14,8 @@ async function connectDB(){
         process.exit(1);
     }
 };
+//all schema is just how the database should store information
+
 
 // Booth Schema
 
@@ -38,9 +43,16 @@ const boothSchema = new mongoose.Schema({
     },
 });
 
-// Volunteer Schema
+// Volunteer Schema (this includes admin)
 
 const volunteerSchema = new mongoose.Schema({
+    //the 4 lines below is just saying is this person an admin then
+    isAdmin: {type: Boolean, required: false, default: false},
+    //token is basically a password for that individual so not everyone can do everything an admin can
+    token:{ type: String, required: true, unique: true },
+    //when its assigned + who its assignedto
+    createdAt: { type: Date, default: Date.now},
+    assignedTo: { type: String, required: true, default: "Unnamed" },
     id: { type: Number, required: true, unique: true },
     name: { type: String, required: true, default: "Unnamed" },
     jobs: {
@@ -48,13 +60,19 @@ const volunteerSchema = new mongoose.Schema({
         boothID: { type: Number, required: false, default: null },
         jobDescription: { type: String, required: false, default: "Unassigned" },
     },
+    
+    
 });
+
 
 // Bearer Token Schema
 
 const bearerTokenSchema = new mongoose.Schema({
+    //actual creation of a token
     token: { type: String, required: true, unique: true },
+    //when its created
     createdAt: { type: Date, default: Date.now},
+    //
     assignedTo: { type: String, required: true, default: "Unnamed" },
 })
 

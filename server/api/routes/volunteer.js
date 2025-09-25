@@ -93,24 +93,29 @@ const express = require("express");
 const router = express.Router();
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer').Strategy;
-
-
 const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
 
 
 
 const { createVolunteer, getAllvolunteer, getVolunteerById } = require("../db/volunteers");
-
+//im assuming this just connects it?
 router.get("/", (req, res) => {
     res.json({ message: "Volunteer API endpoint!"});
 });
-
+//gets all volunteers O.o ik its shocking
 router.get("/all", (req, res) => {
     getAllvolunteer()
         .then(volunteer => res.status(200).json(volunteers))
         .catch(err => res.status(500).json({ error: err.message }));
 });
 
+//creates a volunteer
+router.get("/all", (req, res) => {
+    createVolunteer()
+        
+});
+
+//gets a single volunteer
 router.get("/get", (req, res) => {
     const id = req.query.id;
     getVolunteerById(id).then(volunteer => {

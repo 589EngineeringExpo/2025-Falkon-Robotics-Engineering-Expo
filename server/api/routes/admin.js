@@ -184,4 +184,8 @@ router.post("/createBooth", (req, res) => {
         .catch(err => res.status(400).json({ error: err.message }));
 });
 
+router.patch("/changePeople", (req,res) =>{
+    
+
+});
 module.exports = router;
