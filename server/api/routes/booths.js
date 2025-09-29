@@ -96,7 +96,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { createBooth, getAllBooths, getBoothById } = require("../db/booths");
+const { getAllBooths, getBoothById } = require("../db/booths");
 
 router.get("/", (req, res) => {
     res.json({ message: "Booths API endpoint!"});

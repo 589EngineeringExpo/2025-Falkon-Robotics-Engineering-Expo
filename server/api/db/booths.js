@@ -14,12 +14,40 @@ async function getAllBooths() {
 async function getBoothById(id) {
     return Booth.find({ id: id });
 }
-async function numPeople(integer) {
-    
-    return;
+//Booth.findOneAndUpdate is a mongoose method that lets the programmer find then select and change an object
+async function changeQueue(boothId, amount) {
+  // amount can be positive (increment) or negative (decrement)
+  const booth = await Booth.findOneAndUpdate(
+    { id: boothId },
+    { $inc: { "activities.queue": amount } },
+    { new: true }
+  );
+
+  // Safety: doesn't allow queue < 0
+  if (booth.activities.queue < 0) {
+    booth.activities.queue = 0;
+    await booth.save();
+  }
+
+  return booth;
+}
+async function getQueue(checkingID) {
+    const booth = await Booth.findOne({ id: checkingID }).select("activities.queue");
+    console.log(booth.activities.queue);
+    return booth;
+}
+async function deleteBoothById(boothId) {
+  return await Booth.findOneAndDelete({ id: boothId });
+}
+async function deleteAllBooths() {
+  return await Booth.deleteMany({});
 }
 module.exports = {
     createBooth,
     getAllBooths,
     getBoothById,
+    changeQueue,
+    deleteBoothById,
+    deleteAllBooths,
+    getQueue
 };

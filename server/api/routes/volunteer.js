@@ -91,18 +91,30 @@
 //passport deals with log in stuff
 const express = require("express");
 const router = express.Router();
-const passport = require("passport");
-const BearerStrategy = require('passport-http-bearer').Strategy;
-//const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
-//the stuff above will be done by "gods" itll be in the god.js file
 
-const { createVolunteer, getAllvolunteer, getVolunteerById } = require("../db/volunteers");
-//im assuming this just connects it?
+const { createBooth, getAllBooths, getBoothById } = require("../db/booths");
+
 router.get("/", (req, res) => {
-    res.json({ message: "Volunteer API endpoint!"});
+    res.json({ message: "Booths API endpoint!"});
 });
-//get all volunteer func will be god only 
-//same with get 1 volunteer
+
+router.get("/all", (req, res) => {
+    getAllBooths()
+        .then(booths => res.status(200).json(booths))
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
+router.get("/get", (req, res) => {
+    const id = req.query.id;
+    getBoothById(id).then(booth => {
+        if (booth) {
+            res.status(200).json(booth);
+        }
+        else {
+            res.status(404).json({ error: "Booth not found" });
+        }
+    })
+    .catch(err => res.status(500).json({ error: err.message }));
+});
 
 module.exports = router;
-
