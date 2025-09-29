@@ -92,16 +92,10 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllBooths, getBoothById } = require("../db/booths");
+const { getBoothById, changeQueue} = require("../db/booths");
 
 router.get("/", (req, res) => {
     res.json({ message: "Booths API endpoint!"});
-});
-
-router.get("/all", (req, res) => {
-    getAllBooths()
-        .then(booths => res.status(200).json(booths))
-        .catch(err => res.status(500).json({ error: err.message }));
 });
 
 router.get("/get", (req, res) => {
@@ -115,6 +109,24 @@ router.get("/get", (req, res) => {
         }
     })
     .catch(err => res.status(500).json({ error: err.message }));
+});
+
+router.patch("/:id", (req, res) => {
+    // 1. Get the ID from the URL parameter
+    const id = req.params.id;
+    // 2. Get the specific property changes from the request body
+    const updates = req.body; // e.g., { status: 'occupied' }
+
+    // Call a function to merge the updates into the existing object
+    updateBoothProperties(id, updates)
+        .then(updatedBooth => {
+            if (updatedBooth) {
+                res.status(200).json(updatedBooth);
+            } else {
+                res.status(404).json({ error: "Booth not found" });
+            }
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
 });
 
 module.exports = router;
