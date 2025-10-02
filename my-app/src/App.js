@@ -1,14 +1,11 @@
-
-import './App.css';
-import Header from './components/Header.js';
-import OIP from './assets/OIP.webp';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
-import  AboutPage  from './aboutpage.js';
-import  Homepage  from './Homepage.js';
-import  Event  from './Event.js';
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Navbar from "./components/Navbar";
+import Homepage from "././Homepage";
+import About from "./About";
+import Contact from "./Contact";
 function App() {
     return (
-//DONOTTOUCHPLEASETHISISHELDUPBYGLUE
+
     <span>
       <Router>
         <Routes>

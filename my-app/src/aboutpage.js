@@ -1,9 +1,9 @@
 import './App.css';
 import Header from './components/Header.js';
-import { Link } from 'react-router-dom';
-//alllinks are temporary i will put that in the header later
+////this will be deleted later when i feel like it
 export function aboutpage() {
     return (
+        
         <div className="app-container">
             <Header />
             <div>{/* placeholder */}</div>
@@ -12,27 +12,16 @@ export function aboutpage() {
                     <span className="flex-item">Welcome!</span>
                 </div>
             </div>
-            <div
-  style={{
-    display: 'flex',
-    gap: '200px',
-    justifyContent: 'center',
-    alignItems: 'center',
-    minHeight: '200px',
-    fontSize: '24px',
-    lineHeight: '1.5',
-  }}
->
-  <div className="flex-container">
-    <span> This is the about page!</span>
-  </div>
-        </div>
-         <div className="flex-container">
-    <span><Link to = "/">Home</Link></span>
-    <span><Link to = "aboutpage">about us!</Link></span>
-    <span><Link to = "Event">Event page!</Link></span>
-  </div>
-        </div>
+
+<div className="flex-container"></div>
+   <div className="container">
+   <span>   <p className="left-aligned">Ryan.</p></span>
+  <span>    <p className="right-aligned">WheatSeed </p></span>
+  <span>    <p className="left-aligned">james.</p></span>
+    </div>
+</div>
+
+
     );
 }
 
