@@ -147,6 +147,83 @@
  *                 error:
  *                   type: string
  */
+/**
+ * @swagger
+ * /api/admin/deleteToken:
+ *   delete:
+ *     summary: Delete a bearer token
+ *     security:
+ *      - bearerAuth: []
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The token to delete
+ *     responses:
+ *       204:
+ *         description: Token deleted successfully
+ *       400:
+ *         description: Missing token parameter
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
+/**
+ * @swagger
+ * /api/admin/verifyToken:
+ *   get:
+ *     summary: Verify if a bearer token is valid
+ *     security:
+ *      - bearerAuth: []
+ *     tags: [Admin]
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The token to verify
+ *     responses:
+ *       200:
+ *         description: Token is valid
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                 valid:
+ *                   type: boolean
+ *       400:
+ *         description: Missing token parameter
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *       401:
+ *         description: Invalid token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                 valid:
+ *                   type: boolean
+ */
 
 const express = require("express");
 const router = express.Router();
@@ -176,6 +253,25 @@ router.get("/createToken", async (req, res) => {
     }
     const token = await createBearerToken(req.query.assignedTo);
     res.status(201).json({ message: "Token created", tokenData: token });
+});
+
+router.delete("/deleteToken", async (req, res) => {
+    if (!req.query.token) {
+        return res.status(400).json({ error: "token query parameter is required" });
+    }
+    await deleteBearerToken(req.query.token);
+    res.status(204).send();
+});
+
+router.get("/verifyToken", async (req, res) => {
+    if (!req.query.token) {
+        return res.status(400).json({ error: "token query parameter is required" });
+    }
+    const isValid = await findBearerToken(req.query.token);
+    if (isValid) {
+        return res.status(200).json({ message: "Token is valid", valid: true });
+    }
+    res.status(401).json({ error: "Invalid token", valid: false });
 });
 
 router.post("/createBooth", (req, res) => {
