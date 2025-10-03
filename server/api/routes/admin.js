@@ -153,13 +153,11 @@ const router = express.Router();
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer').Strategy;
 
-const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
-const { createBooth } = require("../db/booths");
+const { createBearerToken, findBearerToken } = require("../db/authTokens");
 
 passport.use(new BearerStrategy(
     async function(token, done) {
         const user = await findBearerToken(token);
-
         if (!user) {
             return done(null, false);
         }
@@ -176,12 +174,6 @@ router.get("/createToken", async (req, res) => {
     }
     const token = await createBearerToken(req.query.assignedTo);
     res.status(201).json({ message: "Token created", tokenData: token });
-});
-
-router.post("/createBooth", (req, res) => {
-    createBooth(req.body)
-        .then(booth => res.status(201).json(booth))
-        .catch(err => res.status(400).json({ error: err.message }));
 });
 
 module.exports = router;
