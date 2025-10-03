@@ -1,22 +1,19 @@
-// /api/booths/ route handler
-
-// IT'S IMPORTANT TO DOCUMENT ANY API ENDPOINTS VIA SWAGGER SO IT SHOWS UP IN /api-docs
 /**
  * @swagger
  * tags:
- *   name: Booths
- *   description: API endpoints for managing booths
+ *   name: volunteer
+ *   description: API endpoints for managing volunteers
  */
 
 /**
  * @swagger
- * /api/booths/:
+ * /api/volunteer/:
  *   get:
- *     summary: Booths API endpoint info
- *     tags: [Booths]
+ *     summary: edit volunteer
+ *     tags: [volunteers]
  *     responses:
  *       200:
- *         description: Returns a message about the Booths API endpoint
+ *         description: Returns a message about the volunteers API endpoint
  *         content:
  *           application/json:
  *             schema:
@@ -28,13 +25,13 @@
 
 /**
  * @swagger
- * /api/booths/all:
+ * /api/volunteer/all:
  *   get:
- *     summary: Get all booths
- *     tags: [Booths]
+ *     summary: Get all volunteer
+ *     tags: [volunteer]
  *     responses:
  *       200:
- *         description: List of all booths
+ *         description: List of all volunteer
  *         content:
  *           application/json:
  *             schema:
@@ -54,27 +51,26 @@
 
 /**
  * @swagger
- * /api/booths/get:
+ * /api/volunteer/get:
  *   get:
- *     summary: Get a booth by ID
- *     tags: [Booths]
+ *     summary: Get a volunteer by ID
+ *     tags: [volunteer]
  *     parameters:
  *       - in: query
- *         name: string
- *         Volunteer name: id
+ *         name: id
  *         schema:
  *           type: string
  *         required: true
- *         description: Booth ID
+ *         description: Volunteer ID
  *     responses:
  *       200:
- *         description: Booth found
+ *         description: Volunteer found
  *         content:
  *           application/json:
  *             schema:
  *               type: object
  *       404:
- *         description: Booth not found
+ *         description: Volunteer not found
  *         content:
  *           application/json:
  *             schema:
@@ -92,7 +88,7 @@
  *                 error:
  *                   type: string
  */
-
+//passport deals with log in stuff
 const express = require("express");
 const router = express.Router();
 

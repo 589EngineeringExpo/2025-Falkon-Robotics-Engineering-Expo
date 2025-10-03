@@ -230,13 +230,11 @@ const router = express.Router();
 const passport = require("passport");
 const BearerStrategy = require('passport-http-bearer').Strategy;
 
-const { createBearerToken, findBearerToken, deleteBearerToken } = require("../db/authTokens");
-const { createBooth } = require("../db/booths");
+const { createBearerToken, findBearerToken } = require("../db/authTokens");
 
 passport.use(new BearerStrategy(
     async function(token, done) {
         const user = await findBearerToken(token);
-
         if (!user) {
             return done(null, false);
         }
