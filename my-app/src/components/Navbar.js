@@ -3,12 +3,14 @@ import { Link } from "react-router-dom";
 import { SidebarData } from "./SidebarData";
 import "../App.css";
 import logo from "../assets/logo.avif";
+import Popup from "../components/Popup.js";
+import "../components/Popip.css";
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
+  const [loginPopup, setLoginPopup] = useState(false); // NEW state
 
   const showSidebar = () => setSidebar(!sidebar);
-
   return (
     <>
       {/* Top bar with logo to toggle sidebar */}
@@ -22,10 +24,7 @@ function Navbar() {
           />
         </Link>
       </div>
-      {/* This is the log in stuff*/}
-      <div className = "Login">
-        
-      </div>
+
       {/* Sidebar menu */}
       <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
         <ul className="nav-menu-items" onClick={showSidebar}>
@@ -37,6 +36,13 @@ function Navbar() {
                 className="logo-icon" 
                 style={{ width: "40px", height: "40px", cursor: "pointer" }} 
               />
+                      {/* This is the log in button */}
+         <div>  <li className="nav-item">
+            <button onClick={() => setLoginPopup(true)}>Log In</button>
+          </li>
+          </div> 
+
+                      {/* end of login  */}
             </Link>
           </li>
           {SidebarData.map((item, index) => {
@@ -49,8 +55,34 @@ function Navbar() {
             );
           })}
         </ul>
+        {/* This is the log in render */}
       </nav>
+            <Popup trigger={loginPopup} setTrigger={setLoginPopup}>
+              <h3>Log In</h3>
+         <form className="login-form">
+           <div className="form-group">
+             <label htmlFor="username">Username</label>
+             <input
+               type="text"
+               id="username"
+               name="username"
+               placeholder="Enter username"
+             />
+           </div>
+           <div className="form-group">
+             <label htmlFor="password">Password</label>
+             <input
+               type="password"
+               id="password"
+               name="password"
+               placeholder="Enter password"
+             />
+           </div>
+         <button type="submit">Log In</button>
+  </form>
+      </Popup>
     </>
+
   );
 }
 
