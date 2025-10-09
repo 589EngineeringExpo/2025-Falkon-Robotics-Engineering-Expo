@@ -1,6 +1,6 @@
 const { BearerToken } = require("./database");
-//loads database^
-//the func below is to create a token
+//creates a password using a bunch of random letters and numbers (aka token)
+//bearertoken just means a token that someone will "bear" or use/hold
 async function createBearerToken(assignedTo) {
     //creates another function in create a token function
     function generateRandomString(length) {
@@ -19,13 +19,28 @@ async function createBearerToken(assignedTo) {
 }
 
 async function findBearerToken(token) {
-    //a function to a find a specific token
     return await BearerToken.findOne({ token });
 }
-async function isTokenValid(token) {
-    // a function to check if a token exists and is valid
+//only checks if that token is there because if someone is a volunteer they should have a token assigned to them
+async function isVolunteer(token) {
     const foundToken = await BearerToken.findOne({ token });
     return foundToken !== null;
+}
+
+async function isAdmin(token) {
+    const tokenDoc = await BearerToken.findOne({ token });
+      if (!tokenDoc) return null;
+
+    return tokenDoc.isAdmin
+        
+}
+
+async function isHost(token) {
+    const tokenDoc = await BearerToken.findOne({ token });
+      if (!tokenDoc) return null;
+
+    return tokenDoc.isHost
+        
 }
 
 async function deleteBearerToken(token) {
@@ -37,4 +52,7 @@ module.exports = {
     createBearerToken,
     findBearerToken,
     deleteBearerToken,
+    isVolunteer,
+    isAdmin,
+    isHost
 };

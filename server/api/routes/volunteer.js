@@ -402,7 +402,8 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 
 passport.use(new BearerStrategy(
     async function(token, done) {
-        const Volunteer = await findBearerToken(token);
+      
+      const Volunteer = await findBearerToken(token);
         if (!Volunteer) {
             return done(null, false);
         }
