@@ -75,7 +75,7 @@ const boothSchema = new mongoose.Schema({
 const volunteerSchema = new mongoose.Schema({
     //the 4 lines below is just saying is this person an admin then
     isAdmin: {type: Boolean, required: false, default: false},
-    isGod: {type: Boolean, required: false, default: false},
+    isHost: {type: Boolean, required: false, default: false},
     //token is basically a password for that individual so not everyone can do everything an admin can
     token:{ type: String, required: true, unique: true },
     //when its assigned + who its assignedto

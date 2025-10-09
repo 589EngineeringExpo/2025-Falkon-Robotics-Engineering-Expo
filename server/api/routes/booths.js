@@ -60,10 +60,10 @@
  *     tags: [Booths]
  *     parameters:
  *       - in: query
- *         name: string
+ *         name: int
  *         Volunteer name: id
  *         schema:
- *           type: string
+ *           type: int
  *         required: true
  *         description: Booth ID
  *     responses:

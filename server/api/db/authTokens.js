@@ -22,6 +22,11 @@ async function findBearerToken(token) {
     //a function to a find a specific token
     return await BearerToken.findOne({ token });
 }
+async function isTokenValid(token) {
+    // a function to check if a token exists and is valid
+    const foundToken = await BearerToken.findOne({ token });
+    return foundToken !== null;
+}
 
 async function deleteBearerToken(token) {
     //a function to delete an existing token
