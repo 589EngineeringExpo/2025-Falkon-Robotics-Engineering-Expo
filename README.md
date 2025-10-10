@@ -1,30 +1,28 @@
-SETUP INSTRUCTIONS IN CONSTRUCTION
+# Falkon Robotics' Engineering Expo 2025
 
-How to setup:
+README IN CONSTRUCTION
 
-1. Run "npm install"
-2. Install MongoDB Community (https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/)
-3. install mongosh (https://www.mongodb.com/docs/mongodb-shell/install/)
-4. Create a temporary admin token using "npm run generateToken"
+This website was meant to guide guests through the Engineering Expo event.
 
+Made with ❤️ by Falkon Robotics' members.
+## Installation
 
-=========================================context=========================================
+1. Download dependencies
+- https://nodejs.org/en/download - Node.js
+- https://www.docker.com/products/docker-desktop - Docker (For running MongoDB)
 
-    Engineering Expo is a yearly carinval-style event where we open up 
-part of our school to allow anyone regardless of financial situation to 
-explore STEAM (Science, Technology,Engineering,Art,Math). Our target audience are 
-children and parents that want to give their kid an introduction to STEAM. Our event 
-has countless booth with most having activities while others being community booths. 
+2. Download the backend
+- Navigate to /
+- Run `npm install`
+- Make a duplicate of `.env.example`, then rename it to `.env`
+- Open `.env`, then edit the fields if needed
 
-    At the time of making this our team has hosted this event 2 
-times and one of the issues that I saw was how some booths got alot more attention 
-compared to others along with some people being lost. So my solution to this problem 
-is a website similar to the sixflags app to be used so that uses popups to point people
-towards the booths that have less attention. My vision for this project is for it to 
-be used yearly without fail and eventually for anyone to be able to use it regardless 
-of how much coding expierience they have. In a perfect world this project
-would allow anyone to use it without changing the code and just the data stored (booths
-+ volunteers).
-
-
-
+3. Install MongoDB
+- Open Docker
+- Open the search box, then find `mongodb/mongodb-community-server`
+- Click "pull"
+- Go to "images"
+- Press the run/start icon next to `mongodb/mongodb-community-server`
+- Under "optional settings", enter a `Container Name`
+- Under "optional settings", input `27017` under `Host port`
+- Click `run`
