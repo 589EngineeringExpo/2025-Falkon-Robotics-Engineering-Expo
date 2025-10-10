@@ -1,120 +1,533 @@
 /**
  * @swagger
  * tags:
- *   name: volunteer
- *   description: API endpoints for managing volunteers
+ *   - name: Booths
+ *     description: Endpoints for booth operations
+ *   - name: God
+ *     description: Privileged admin endpoints
  */
 
 /**
  * @swagger
- * /api/volunteer/:
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ *   schemas:
+ *     Booth:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           example: "booth123"
+ *         name:
+ *           type: string
+ *           example: "Photo Booth 1"
+ *         status:
+ *           type: string
+ *           example: "available"
+ *         queue:
+ *           type: array
+ *           items:
+ *             type: string
+ *           example: ["Volunteer1", "Volunteer2"]
+ *     Volunteer:
+ *       type: object
+ *       properties:
+ *         Volunteer:
+ *           type: string
+ *           example: "volunteerA"
+ *         isAdmin:
+ *           type: boolean
+ *           example: false
+ *         isGod:
+ *           type: boolean
+ *           example: false
+ *     TokenResponse:
+ *       type: object
+ *       properties:
+ *         message:
+ *           type: string
+ *           example: "Token created"
+ *         tokenData:
+ *           type: object
+ *           properties:
+ *             token:
+ *               type: string
+ *               example: "abcdef123456"
+ *             assignedTo:
+ *               type: string
+ *               example: "volunteerA"
+ */
+
+/**
+ * @swagger
+ * /booths:
  *   get:
- *     summary: edit volunteer
- *     tags: [volunteers]
+ *     summary: Base Booths API endpoint
+ *     tags: [Booths]
  *     responses:
  *       200:
- *         description: Returns a message about the volunteers API endpoint
+ *         description: Simple test message
  *         content:
  *           application/json:
  *             schema:
  *               type: object
- *               properties:
- *                 message:
- *                   type: string
+ *               example:
+ *                 message: "Booths API endpoint!"
  */
 
 /**
  * @swagger
- * /api/volunteer/all:
+ * /booths/get:
  *   get:
- *     summary: Get all volunteer
- *     tags: [volunteer]
- *     responses:
- *       200:
- *         description: List of all volunteer
- *         content:
- *           application/json:
- *             schema:
- *               type: array
- *               items:
- *                 type: object
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- */
-
-/**
- * @swagger
- * /api/volunteer/get:
- *   get:
- *     summary: Get a volunteer by ID
- *     tags: [volunteer]
+ *     summary: Get booth by ID
+ *     tags: [Booths]
  *     parameters:
  *       - in: query
  *         name: id
+ *         required: true
  *         schema:
  *           type: string
- *         required: true
- *         description: Volunteer ID
+ *         description: The booth ID to retrieve
  *     responses:
  *       200:
- *         description: Volunteer found
+ *         description: Booth found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Booth'
+ *       404:
+ *         description: Booth not found
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /booths/{id}:
+ *   patch:
+ *     summary: Update a booth queue or property
+ *     tags: [Booths]
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: Booth ID
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             example: { "status": "occupied" }
+ *     responses:
+ *       200:
+ *         description: Booth updated
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Booth'
+ *       404:
+ *         description: Booth not found
+ *       500:
+ *         description: Internal error
+ */
+
+/**
+ * @swagger
+ * /booths/createToken:
+ *   get:
+ *     summary: Create a Bearer token for a Volunteer
+ *     tags: [Booths]
+ *     parameters:
+ *       - in: query
+ *         name: assignedTo
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Token successfully created
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/TokenResponse'
+ *       400:
+ *         description: Missing assignedTo parameter
+ */
+
+/**
+ * @swagger
+ * /god:
+ *   get:
+ *     summary: Verify God API access
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Confirmation message
  *         content:
  *           application/json:
  *             schema:
  *               type: object
+ *               example:
+ *                 message: "God API operational. Welcome, Master Host."
+ *                 Volunteer: "adminUser"
+ */
+
+/**
+ * @swagger
+ * /god/createVolunteer:
+ *   post:
+ *     summary: Create a new Volunteer (Volunteer, Admin, or God)
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Volunteer'
+ *     responses:
+ *       201:
+ *         description: Volunteer created
+ *       400:
+ *         description: Invalid input
+ */
+
+/**
+ * @swagger
+ * /god/updateVolunteerRole:
+ *   patch:
+ *     summary: Update a Volunteer's role (Admin/God)
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               Volunteer:
+ *                 type: string
+ *               isAdmin:
+ *                 type: boolean
+ *               isGod:
+ *                 type: boolean
+ *     responses:
+ *       200:
+ *         description: Volunteer updated
  *       404:
  *         description: Volunteer not found
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
- *       500:
- *         description: Server error
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 error:
- *                   type: string
  */
+
+/**
+ * @swagger
+ * /god/deleteVolunteer:
+ *   delete:
+ *     summary: Delete a Volunteer by id
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: Volunteer
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Volunteer deleted
+ *       404:
+ *         description: Volunteer not found
+ */
+
+/**
+ * @swagger
+ * /god/createBooth:
+ *   post:
+ *     summary: Create a new booth
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/Booth'
+ *     responses:
+ *       201:
+ *         description: Booth created
+ *       400:
+ *         description: Invalid booth data
+ */
+
+/**
+ * @swagger
+ * /god/updateBooth:
+ *   patch:
+ *     summary: Update any detail of a booth
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *     responses:
+ *       200:
+ *         description: Booth updated
+ *       404:
+ *         description: Booth not found
+ *       500:
+ *         description: Internal server error
+ */
+
+/**
+ * @swagger
+ * /god/deleteBooth:
+ *   delete:
+ *     summary: Delete a booth
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Booth deleted
+ *       404:
+ *         description: Booth not found
+ */
+
+/**
+ * @swagger
+ * /god/createToken:
+ *   get:
+ *     summary: Create a token for any Volunteer (God only)
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: assignedTo
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       201:
+ *         description: Token created
+ *       400:
+ *         description: Missing assignedTo parameter
+ */
+
+/**
+ * @swagger
+ * /god/deleteToken:
+ *   delete:
+ *     summary: Invalidate a token (God only)
+ *     tags: [God]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         required: true
+ *         schema:
+ *           type: string
+ *     responses:
+ *       200:
+ *         description: Token deleted
+ *       400:
+ *         description: Missing token parameter
+ */
+
 //passport deals with log in stuff
 const express = require("express");
 const router = express.Router();
 
-const { getAllBooths, getBoothById } = require("../db/booths");
+const {changeQueue} = require("../db/booths");
 
 router.get("/", (req, res) => {
     res.json({ message: "Booths API endpoint!"});
 });
 
-router.get("/all", (req, res) => {
-    getAllBooths()
-        .then(booths => res.status(200).json(booths))
+router.patch("/changeQueue", (req, res) => {
+    // 1. Get the ID from the URL parameter
+    const id = req.params.id;
+    // 2. Get the specific property changes from the request body
+    const updates = req.body; // e.g., { status: 'occupied' }
+
+    // Call a function to merge the updates into the existing object
+    changeQueue(id, updates)
+        .then(updatedBooth => {
+            if(Number.isInteger(updates)){
+              res.status(400).json({ error: "Integers (whole numbers) only" });
+            }
+            if (updatedBooth) {
+                res.status(200).json(updatedBooth);
+            } else {
+                res.status(404).json({ error: "Booth not found" });
+            }
+        })
         .catch(err => res.status(500).json({ error: err.message }));
 });
 
-router.get("/get", (req, res) => {
-    const id = req.query.id;
-    getBoothById(id).then(booth => {
-        if (booth) {
-            res.status(200).json(booth);
+const { createBearerToken, findBearerToken } = require("../db/authTokens");
+const passport = require("passport");
+const BearerStrategy = require('passport-http-bearer').Strategy;
+
+
+passport.use(new BearerStrategy(
+    async function(token, done) {
+      
+      const Volunteer = await findBearerToken(token);
+        if (!Volunteer) {
+            return done(null, false);
         }
-        else {
-            res.status(404).json({ error: "Booth not found" });
-        }
-    })
-    .catch(err => res.status(500).json({ error: err.message }));
+        return done(null, Volunteer);
+    }
+));
+
+router.use(passport.initialize());
+router.use(passport.authenticate('bearer', { session: false }));
+
+router.get("/createToken", async (req, res) => {
+    if (!req.query.assignedTo) {
+        return res.status(400).json({ error: "assignedTo query parameter is required" });
+    }
+    const token = await createBearerToken(req.query.assignedTo);
+    res.status(201).json({ message: "Token created", tokenData: token });
+});
+// --- Database/Authentication Imports ---
+// Assuming these functions handle the God-level operations
+const { createBooth, deleteBooth, updateBooth } = require("../db/booths");
+const { createVolunteer, deleteVolunteer} = require("../db/volunteer"); // New Volunteer management functions
+
+// ======================================================================
+// PASSPORT STRATEGY (Token-only validation, no Volunteer role checks)
+// ======================================================================
+
+passport.use(new BearerStrategy(async function(token, done) {
+  const tokenData = await findBearerToken(token);
+  if (!tokenData) return done(null, false); // Token not found = unauthorized
+  return done(null, tokenData); // Attach tokenData to req.Volunteer
+}));
+
+router.use(passport.initialize());
+router.use(passport.authenticate('bearer', { session: false }));
+
+// ======================================================================
+// BASE ENDPOINT
+// ======================================================================
+router.get("/", (req, res) => {
+  res.json({ 
+    message: "Authorized access using token", 
+    token: req.Volunteer.token, 
+    assignedTo: req.Volunteer.assignedTo 
+  });
+});
+
+// ======================================================================
+// TOKEN MANAGEMENT
+// ======================================================================
+router.get("/createToken", async (req, res) => {
+  const { assignedTo } = req.query;
+  if (!assignedTo) return res.status(400).json({ error: "assignedTo is required" });
+
+  const token = await createBearerToken(assignedTo);
+  res.status(201).json({ message: "Token created", tokenData: token });
+});
+
+router.delete("/deleteToken", async (req, res) => {
+  const { token } = req.query;
+  if (!token) return res.status(400).json({ error: "token is required" });
+
+  await deleteBearerToken(token);
+  res.status(200).json({ message: "Token deleted" });
+});
+
+// ======================================================================
+// Volunteer MANAGEMENT
+// ======================================================================
+router.post("/createVolunteer", async (req, res) => {
+  try {
+    const Volunteer = await createVolunteer(req.body);
+    res.status(201).json(Volunteer);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.delete("/deleteVolunteer", async (req, res) => {
+  const { Volunteer } = req.query;
+  if (!id) return res.status(400).json({ error: "id is required" });
+
+  try {
+    await deleteVolunteer(Volunteer);
+    res.status(200).json({ message: `Volunteer ${id} deleted.` });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
+});
+
+// ======================================================================
+// BOOTH MANAGEMENT
+// ======================================================================
+router.post("/createBooth", async (req, res) => {
+  try {
+    const booth = await createBooth(req.body);
+    res.status(201).json(booth);
+  } catch (err) {
+    res.status(400).json({ error: err.message });
+  }
+});
+
+router.patch("/updateBooth", async (req, res) => {
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ error: "id is required" });
+
+  try {
+    const booth = await updateBooth(id, req.body);
+    if (!booth) return res.status(404).json({ error: "Booth not found" });
+    res.status(200).json(booth);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+router.delete("/deleteBooth", async (req, res) => {
+  const { id } = req.query;
+  if (!id) return res.status(400).json({ error: "id is required" });
+
+  try {
+    await deleteBooth(id);
+    res.status(200).json({ message: `Booth ${id} deleted.` });
+  } catch (err) {
+    res.status(404).json({ error: err.message });
+  }
 });
 
 module.exports = router;
