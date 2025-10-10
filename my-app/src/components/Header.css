@@ -1,0 +1,19 @@
+.header {
+  background-color: #00008b;
+  padding: 10px 20px;
+  color: rgb(0, 0, 255);
+  display: flex;
+  justify-content: space-between;
+  align-items: right;
+}
+.flex-container span a {
+  color: #ffffff;  
+  text-decoration: none;  
+  font-weight: bold;     
+  transition: color 0.3s ease;
+}
+
+.flex-container span a:hover {
+  color: #c300ff;  
+}
+
