@@ -1,10 +1,6 @@
-uhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhhh
--Open terminal on my-app
-run npm start
-should load local host and show page
+SETUP INSTRUCTIONS IN CONSTRUCTION
 
-if any issues dm me(wheat)
-uhhhhhhhhhhhhhhhh that should be it
+How to setup:
 
 1. Run "npm install"
 2. Install MongoDB Community (https://www.mongodb.com/docs/manual/tutorial/install-mongodb-community-with-docker/)

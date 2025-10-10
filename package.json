@@ -1,0 +1,36 @@
+{
+  "name": "2025-falkon-robotics-engineering-expo",
+  "version": "0.0.1",
+  "description": "Falkon Robotic's Engineering Expo Website",
+  "homepage": "https://github.com/589EngineeringExpo/2025-Falkon-Robotics-Engineering-Expo#readme",
+  "bugs": {
+    "url": "https://github.com/589EngineeringExpo/2025-Falkon-Robotics-Engineering-Expo/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/589EngineeringExpo/2025-Falkon-Robotics-Engineering-Expo.git"
+  },
+  "license": "ISC",
+  "author": "Friends of Falkon Robotics",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "generateToken": "node generateAdminBearerToken.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.2",
+    "express": "^5.1.0",
+    "express-rate-limit": "^8.1.0",
+    "helmet": "^8.1.0",
+    "mongoose": "^8.18.1",
+    "morgan": "^1.10.1",
+    "passport": "^0.7.0",
+    "passport-http-bearer": "^1.0.1",
+    "path": "^0.12.7",
+    "swagger-jsdoc": "^6.2.8",
+    "swagger-ui-express": "^5.0.1"
+  }
+}
