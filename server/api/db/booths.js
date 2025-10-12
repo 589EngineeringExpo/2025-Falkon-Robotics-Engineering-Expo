@@ -1,7 +1,20 @@
 const { Booth } = require("./database");
 
-//creates a booth using "data" which is an object
-async function createBooth(data) { // in JSON format
+async function validateBoothData(data) {
+    const requiredFields = ["id", "name", "description", "createdBy", "location", "volunteers", "image", "type"];
+    for (const field of requiredFields) {
+        if (!(field in data)) {
+            return { valid: false, message: `Missing required field: ${field}` };
+        }
+    }
+    return { valid: true };
+}
+
+async function createBooth(data) { // Following the format in validateBoothData()
+    const validation = await validateBoothData(data);
+    if (!validation.valid) {
+        return validation.message;
+    }
     const newBooth = new Booth(data);
     return newBooth.save();
 }
@@ -37,10 +50,10 @@ async function getQueue(checkingID) {
     return booth;
 }
 async function deleteBoothById(boothId) {
-  return await Booth.findOneAndDelete({ id: boothId });
+    return await Booth.findOneAndDelete({ id: boothId });
 }
 async function deleteAllBooths() {
-  return await Booth.deleteMany({});
+    return await Booth.deleteMany({});
 }
 module.exports = {
     createBooth,

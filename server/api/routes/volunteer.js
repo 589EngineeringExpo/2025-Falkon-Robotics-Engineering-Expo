@@ -1,10 +1,8 @@
 /**
  * @swagger
  * tags:
- *   - name: Booths
- *     description: Endpoints for booth operations
- *   - name: God
- *     description: Privileged admin endpoints
+ *   - name: volunteer
+ *     description: Management for all volunteers
  */
 
 /**
@@ -60,105 +58,6 @@
  *             assignedTo:
  *               type: string
  *               example: "volunteerA"
- */
-
-/**
- * @swagger
- * /booths:
- *   get:
- *     summary: Base Booths API endpoint
- *     tags: [Booths]
- *     responses:
- *       200:
- *         description: Simple test message
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               example:
- *                 message: "Booths API endpoint!"
- */
-
-/**
- * @swagger
- * /booths/get:
- *   get:
- *     summary: Get booth by ID
- *     tags: [Booths]
- *     parameters:
- *       - in: query
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: The booth ID to retrieve
- *     responses:
- *       200:
- *         description: Booth found
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Booth'
- *       404:
- *         description: Booth not found
- *       500:
- *         description: Internal server error
- */
-
-/**
- * @swagger
- * /booths/{id}:
- *   patch:
- *     summary: Update a booth queue or property
- *     tags: [Booths]
- *     parameters:
- *       - in: path
- *         name: id
- *         required: true
- *         schema:
- *           type: string
- *         description: Booth ID
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             example: { "status": "occupied" }
- *     responses:
- *       200:
- *         description: Booth updated
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/Booth'
- *       404:
- *         description: Booth not found
- *       500:
- *         description: Internal error
- */
-
-/**
- * @swagger
- * /booths/createToken:
- *   get:
- *     summary: Create a Bearer token for a Volunteer
- *     tags: [Booths]
- *     parameters:
- *       - in: query
- *         name: assignedTo
- *         required: true
- *         schema:
- *           type: string
- *     responses:
- *       201:
- *         description: Token successfully created
- *         content:
- *           application/json:
- *             schema:
- *               $ref: '#/components/schemas/TokenResponse'
- *       400:
- *         description: Missing assignedTo parameter
  */
 
 /**
@@ -370,11 +269,7 @@ const router = express.Router();
 
 const {changeQueue} = require("../db/booths");
 
-router.get("/", (req, res) => {
-    res.json({ message: "Booths API endpoint!"});
-});
-
-router.patch("/changeQueue", (req, res) => {
+router.post("/changeQueue", (req, res) => {
     // 1. Get the ID from the URL parameter
     const id = req.params.id;
     // 2. Get the specific property changes from the request body
@@ -402,8 +297,7 @@ const BearerStrategy = require('passport-http-bearer').Strategy;
 
 passport.use(new BearerStrategy(
     async function(token, done) {
-      
-      const Volunteer = await findBearerToken(token);
+        const Volunteer = await findBearerToken(token);
         if (!Volunteer) {
             return done(null, false);
         }

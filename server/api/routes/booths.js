@@ -10,20 +10,8 @@
 
 /**
  * @swagger
- * /api/booths/:
- *   get:
- *     summary: Booths API endpoint info
- *     tags: [Booths]
- *     responses:
- *       200:
- *         description: Returns a message about the Booths API endpoint
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 message:
- *                   type: string
+ * /api/booths/createBooth:
+ *  post:
  */
 
 /**
@@ -96,11 +84,29 @@
 const express = require("express");
 const router = express.Router();
 
-const { getAllBooths, getBoothById } = require("../db/booths");
+// Authentication setup. Routes will call this middleware if needed for authentication
+const passport = require("passport");
+const BearerStrategy = require('passport-http-bearer').Strategy;
+passport.use(new BearerStrategy(
+    async function(token, done) {
+        const tokenData = await findBearerToken(token);
+        if (!tokenData) { // If no token is found
+            return done(null, false);
+        }
+        
+        // Token found, returning associated roles
+        if (tokenData.roles.isAdmin) {
+            return done(null, { role: 'admin', name: tokenData.assignedTo });
+        }
+        if (tokenData.roles.isHost) {
+            return done(null, { role: 'host', name: tokenData.assignedTo });
+        }
+        return done(null, { role: 'volunteer', name: tokenData.assignedTo });
+    }
+));
 
-router.get("/", (req, res) => {
-    res.json({ message: "Booths API endpoint!"});
-});
+const { createBooth, getAllBooths, getBoothById } = require("../db/booths"); // Importing booth functions
+const { isVolunteer, isAdmin, isHost } = require("../db/authTokens"); // Authentication functions
 
 router.get("/all", (req, res) => {
     getAllBooths()
@@ -119,6 +125,15 @@ router.get("/get", (req, res) => {
         }
     })
     .catch(err => res.status(500).json({ error: err.message }));
+});
+
+router.post("/createBooth", passport.authenticate('bearer', { session: false }), (req, res) => {
+    if (req.user.role === "host") {
+        createBooth(req.body)
+            .then(booth => res.status(201).json(booth))
+            .catch(err => res.status(500).json({ error: err.message }));
+    }
+    return res.status(403).json({ error: "Forbidden: User is not a HOST" });
 });
 
 module.exports = router;

@@ -1,19 +1,23 @@
-
-
-
-require("dotenv").config(); // Getting settings from .env file
+require("dotenv").config(); // Find the .env file and load it
+const mongoURI = process.env.MONGODB_URI; // Read MONGODB_URI from .env
 const mongoose = require("mongoose");
-//seting stuff ^ + importing\
+//setting stuff ^ + importing\
 //everything below is just how to store stuff
 //connectDB is just a way to show if connection works or doesnt
 //console.log just prints the following quote in console 
 async function connectDB(){
-    const mongoURI = process.env.MONGODB_URI;
     try {
-        await mongoose.connect(mongoURI);
-        console.log("MongoDB connected");
+        console.log("** Attempting to connect to MongoDB **")
+        await mongoose.connect(mongoURI, { serverSelectionTimeoutMS: 5000 }); // 5 seconds timeout
+        if (mongoose.connection.readyState === 1) {
+            console.log("MongoDB connected");
+        } else {
+            console.error("MongoDB connection failed: Not connected after connect()");
+            process.exit(1);
+        }
     } catch (error) {
         console.error("MongoDB connection error:", error);
+        console.error("Ensure that MongoDB is running and that the MONGODB_URI in the .env file is correct.");
         process.exit(1);
     }
 };
