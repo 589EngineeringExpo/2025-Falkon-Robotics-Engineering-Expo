@@ -27,7 +27,7 @@ export const SidebarData = [
   },
   {
     title: "Donate",
-    path: "/Donate",
+    path: "https://www.cvrobots.com/support-us",
     cName: "nav-text",
   },
     {

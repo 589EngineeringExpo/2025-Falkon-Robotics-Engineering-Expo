@@ -2,13 +2,13 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { SidebarData } from "./SidebarData";
 import "../App.css";
-import logo from "../assets/logo.avif";
+import logo from "../assets/expo2025.png";
 import Popup from "../components/Popup.js";
 import "../components/Popip.css";
 
 function Navbar() {
   const [sidebar, setSidebar] = useState(false);
-  const [loginPopup, setLoginPopup] = useState(false); // NEW state
+  const [loginPopup, setLoginPopup] = useState(false); 
 
   const showSidebar = () => setSidebar(!sidebar);
   return (
@@ -20,7 +20,7 @@ function Navbar() {
             src={logo} 
             alt="Logo" 
             className="logo-icon" 
-            style={{ width: "40px", height: "40px", cursor: "pointer" }} 
+            style={{ width: "45px", height: "60px", cursor: "pointer" }} 
           />
         </Link>
       </div>
@@ -28,32 +28,44 @@ function Navbar() {
       {/* Sidebar menu */}
       <nav className={sidebar ? "nav-menu active" : "nav-menu"}>
         <ul className="nav-menu-items" onClick={showSidebar}>
-          <li className="navbar-toggle">
-            <Link to="#" className="menu-bars">
-              <img 
-                src={logo} 
-                alt="Logo" 
-                className="logo-icon" 
-                style={{ width: "40px", height: "40px", cursor: "pointer" }} 
-              />
-                      {/* This is the log in button */}
-         <div>  <li className="nav-item">
-            <button onClick={() => setLoginPopup(true)}>Log In</button>
-          </li>
-          </div> 
+       <li className="navbar-toggle">
+         <Link to="#" className="menu-bars">
+           <img
+             src={logo}
+             alt="Logo"
+             className="logo-icon"
+             style={{ width: "45px", height: "60px", cursor: "pointer" }}
+           />
+         </Link>
 
-                      {/* end of login  */}
-            </Link>
-          </li>
+         {/* This is the log in button */}
+         <div className="nav-item">
+           <button onClick={() => setLoginPopup(true)}>Log In</button>
+         </div>
+         {/* end of login */}
+       </li>
+
           {SidebarData.map((item, index) => {
-            return (
-              <li key={index} className={item.cName}>
+          const isExternal = item.path.startsWith("http");    
+          return (
+            <li key={index} className={item.cName}>
+              {isExternal ? (
+                <a
+                  href={item.path}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <span>{item.title}</span>
+                </a>
+              ) : (
                 <Link to={item.path}>
                   <span>{item.title}</span>
                 </Link>
-              </li>
-            );
-          })}
+              )}
+            </li>
+          );
+        })}
+
         </ul>
         {/* This is the log in render */}
       </nav>

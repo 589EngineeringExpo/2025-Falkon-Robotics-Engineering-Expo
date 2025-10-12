@@ -2,10 +2,12 @@
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.logo-icon {
+  display: block;
+  margin-left: 10px; 
+  margin-right: auto; 
 }
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -69,6 +71,7 @@ body {
   min-height: 100vh; 
   background: url("./assets/bg.jpg");
   background-size: cover;
+  padding-top: 20px; 
 }
 .container {
   display: flex;
@@ -114,51 +117,59 @@ body {
   color: #182989;
 }
 
+
 /* Navbar CSS */
 .navbar {
-  background-color: #2b0e94;
+  background-color: #2b0e94;  
   height: 80px;
+  width: 100%;
   display: flex;
   justify-content: flex-start;
   align-items: center;
+  position: fixed;  
+  top: 0;
+  left: 0;
+  z-index: 100;   
+  box-shadow: 0 2px 5px rgba(0,0,0,0.3); 
 }
 
 .menu-bars {
   margin-left: 2rem;
   font-size: 2rem;
   background: none;
-  color: #000;
+  color: #fff;  
+  cursor: pointer;
 }
 
+/* Sidebar menu */
 .nav-menu {
-  background-color: #1a2baf;
+  background-color: #1a2baf; 
   width: 300px;
   height: 100vh;
   display: flex;
   justify-content: center;
   position: fixed;
   top: 0;
-  left: -100%;
-  transition: 850ms;
+  left: -100%;  /* hidden by default */
+  transition: left 0.45s ease;
+  z-index: 999;  /* below navbar but above main content */
 }
 
 .nav-menu.active {
-  left: 0;
-  transition: 450ms;
+  left: 0;  /* slides in */
 }
 
 .nav-text {
   display: flex;
-  justify-content: flex-start;
   align-items: center;
-  padding: 8px 0px 8px 16px;
+  padding: 8px 16px;
   list-style: none;
   height: 60px;
 }
 
 .nav-text a {
   text-decoration: none;
-  color: #151414;
+  color: #fff;  /* white text for visibility */
   font-size: 18px;
   width: 95%;
   height: 100%;
@@ -170,22 +181,130 @@ body {
 
 .nav-text a:hover {
   background-color: #000000;
-  color: #fff;
+  color: #61dafb;  /* hover effect */
 }
 
-.nav-menu-items {
-  width: 100%;
-}
 
-.navbar-toggle {
-  background-color: #2d0fa5;
-  width: 100%;
-  height: 80px;
+/* Sidebar container */
+.nav-menu {
+  background-color: rgb(221, 130, 10);
+  width: 280px;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: -100%;
+  border: 2px solid black;
+  border-radius: 15px;
+  transition: 0.4s ease;
+  z-index: 1000;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
   display: flex;
-  justify-content: flex-start;
+  flex-direction: column;
   align-items: center;
 }
 
-span {
-  margin-left: 16px;
+.nav-menu.active {
+  left: 0;
+}
+
+/* Sidebar header */
+.sidebar-header {
+  width: 100%;
+  position: relative;
+  text-align: center;
+  padding: 20px 0;
+}
+
+.sidebar-header h2 {
+  margin: 0;
+  font-size: 1.5rem;
+  color: black;
+}
+
+.divider {
+  border: none;
+  border-top: 2px dashed black;
+  margin: 10px 40px;
+}
+
+/* Close button */
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: black;
+  color: rgb(201, 131, 27);
+  border: none;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  font-size: 18px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+/* Move logo to left */
+.logo-icon {
+  display: block;
+  margin-left: 15px;
+  margin-right: auto;
+}
+
+/* Remove list bullet */
+.nav-menu-items,
+.nav-text {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+nav-menu {
+  background-color: rgb(219, 126, 20);
+  border: 2px solid rgba(0, 0, 0, 0.11);
+  border-radius: 15px;
+  width: 280px;
+  padding-top: 20px;
+  align-items: center;
+}
+
+.navbar-toggle {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+/* Log In button placement */
+.nav-item button {
+  background-color: transparent;
+  border: none;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.nav-item button:hover {
+  color: #3f51b5;
+}
+
+.nav-text a {
+  text-decoration: none;
+  color: black;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: block;
+  text-align: center;
+  margin: 15px 0;
+}
+
+.nav-text a:hover {
+  color: #3f51b5;
+}
+
+.nav-item::after {
+  content: "";
+  display: block;
+  width: 60%;
+  height: 2px;
+  border-top: 2px dashed black;
+  margin: 10px auto;
 }

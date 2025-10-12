@@ -12,7 +12,6 @@ export default function Map() {
   ];
 const BoothIcon = L.icon({
   iconUrl: BoothIconImg,
-    //reminder, PLEASE FOR THE LOVE OF GOD GET THE MAP
     iconSize:     [66, 95], // size of the icon
     shadowSize:   [50, 64], // size of the shadow
     iconAnchor:   [22, 94], // point of the icon which will correspond to marker's location
@@ -28,6 +27,8 @@ const BoothIcon = L.icon({
     <MapContainer
       crs={L.CRS.Simple}
       bounds={bounds}
+      maxBounds={bounds}         
+      maxBoundsViscosity={1.0}   
       style={{ width: '800px', height: '600px' }}
     >
       <ImageOverlay url={MapImage} bounds={bounds} />
