@@ -1,12 +1,5 @@
 /**
  * @swagger
- * tags:
- *   - name: volunteer
- *     description: Management for all volunteers
- */
-
-/**
- * @swagger
  * components:
  *   securitySchemes:
  *     bearerAuth:
@@ -308,16 +301,8 @@ passport.use(new BearerStrategy(
 router.use(passport.initialize());
 router.use(passport.authenticate('bearer', { session: false }));
 
-router.get("/createToken", async (req, res) => {
-    if (!req.query.assignedTo) {
-        return res.status(400).json({ error: "assignedTo query parameter is required" });
-    }
-    const token = await createBearerToken(req.query.assignedTo);
-    res.status(201).json({ message: "Token created", tokenData: token });
-});
 // --- Database/Authentication Imports ---
 // Assuming these functions handle the God-level operations
-const { createBooth, deleteBooth, updateBooth } = require("../db/booths");
 const { createVolunteer, deleteVolunteer} = require("../db/volunteer"); // New Volunteer management functions
 
 // ======================================================================
@@ -330,9 +315,6 @@ passport.use(new BearerStrategy(async function(token, done) {
   return done(null, tokenData); // Attach tokenData to req.Volunteer
 }));
 
-router.use(passport.initialize());
-router.use(passport.authenticate('bearer', { session: false }));
-
 // ======================================================================
 // BASE ENDPOINT
 // ======================================================================
@@ -342,25 +324,6 @@ router.get("/", (req, res) => {
     token: req.Volunteer.token, 
     assignedTo: req.Volunteer.assignedTo 
   });
-});
-
-// ======================================================================
-// TOKEN MANAGEMENT
-// ======================================================================
-router.get("/createToken", async (req, res) => {
-  const { assignedTo } = req.query;
-  if (!assignedTo) return res.status(400).json({ error: "assignedTo is required" });
-
-  const token = await createBearerToken(assignedTo);
-  res.status(201).json({ message: "Token created", tokenData: token });
-});
-
-router.delete("/deleteToken", async (req, res) => {
-  const { token } = req.query;
-  if (!token) return res.status(400).json({ error: "token is required" });
-
-  await deleteBearerToken(token);
-  res.status(200).json({ message: "Token deleted" });
 });
 
 // ======================================================================
@@ -382,43 +345,6 @@ router.delete("/deleteVolunteer", async (req, res) => {
   try {
     await deleteVolunteer(Volunteer);
     res.status(200).json({ message: `Volunteer ${id} deleted.` });
-  } catch (err) {
-    res.status(404).json({ error: err.message });
-  }
-});
-
-// ======================================================================
-// BOOTH MANAGEMENT
-// ======================================================================
-router.post("/createBooth", async (req, res) => {
-  try {
-    const booth = await createBooth(req.body);
-    res.status(201).json(booth);
-  } catch (err) {
-    res.status(400).json({ error: err.message });
-  }
-});
-
-router.patch("/updateBooth", async (req, res) => {
-  const { id } = req.query;
-  if (!id) return res.status(400).json({ error: "id is required" });
-
-  try {
-    const booth = await updateBooth(id, req.body);
-    if (!booth) return res.status(404).json({ error: "Booth not found" });
-    res.status(200).json(booth);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
-  }
-});
-
-router.delete("/deleteBooth", async (req, res) => {
-  const { id } = req.query;
-  if (!id) return res.status(400).json({ error: "id is required" });
-
-  try {
-    await deleteBooth(id);
-    res.status(200).json({ message: `Booth ${id} deleted.` });
   } catch (err) {
     res.status(404).json({ error: err.message });
   }

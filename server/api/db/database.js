@@ -34,7 +34,7 @@ const boothSchema = new mongoose.Schema({
     id: { type: Number, required: true, unique: true },
     name: { type: String, required: true, default: "Unnamed Booth" },
     description: { type: String, required: true, default: "No description provided." },
-    theme: { type: String, required: false, default: "No theme provided" },
+    createdBy: { type: String, required: true, default: "Unnamed Creator" },
     location: { type: Array, required: true, default: [{x: 0, y: 0}] },
     boothRunners: { type: Array, required: true, default: [] },
     boothImage: { type: String, required: true, default: "https://pub-8f769214a6e4406c9614b19c1746938b.r2.dev/example.png" },
