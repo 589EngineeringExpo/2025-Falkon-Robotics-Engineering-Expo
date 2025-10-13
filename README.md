@@ -26,3 +26,13 @@ Made with ❤️ by Falkon Robotics' members.
 - Under "optional settings", enter a `Container Name`
 - Under "optional settings", input `27017` under `Host port`
 - Click `run`
+
+4. (Optional) Install MongoDB Compass
+- https://www.mongodb.com/try/download/compass - MongoDB Compass (A way for you to visually see your database and the data inside)
+- Click the plus arrow next to "Connections"
+- Put `mongodb://localhost:27017/expo` in `URI`
+- Press "Save"
+- Next to the new connection (Default name: localhost:27017), press "Connect"
+- Navigate to `expo` under the connection
+- Open any of the folders to find current data in the database
+- (Use Ctrl + R to rescan the database for new or changed entries)
