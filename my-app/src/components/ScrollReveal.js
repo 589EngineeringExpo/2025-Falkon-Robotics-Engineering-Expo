@@ -1,107 +1,80 @@
 import { useEffect, useRef, useMemo } from 'react';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-
 import './ScrollReveal.css';
 
 gsap.registerPlugin(ScrollTrigger);
 
 const ScrollReveal = ({
   children,
-  scrollContainerRef,
+  baseOpacity = 0,
   enableBlur = true,
-  baseOpacity = 0.1,
-  baseRotation = 3,
-  blurStrength = 4,
-  containerClassName = '',
-  textClassName = '',
-  rotationEnd = 'bottom bottom',
-  wordAnimationEnd = 'bottom bottom'
+  blurStrength = 10,
+  lineGap = '50vh', // how much scroll distance between lines
 }) => {
   const containerRef = useRef(null);
 
-  const splitText = useMemo(() => {
-    const text = typeof children === 'string' ? children : '';
-    return text.split(/(\s+)/).map((word, index) => {
-      if (word.match(/^\s+$/)) return word;
-      return (
-        <span className="word" key={index}>
-          {word}
-        </span>
-      );
-    });
+  // Split text by newlines
+  const lines = useMemo(() => {
+    if (typeof children !== 'string') return [];
+    return children.split(/\r?\n/).filter(line => line.trim() !== '');
   }, [children]);
 
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
 
-    const scroller = scrollContainerRef && scrollContainerRef.current ? scrollContainerRef.current : window;
+    const lineEls = el.querySelectorAll('.scroll-line');
 
-    gsap.fromTo(
-      el,
-      { transformOrigin: '0% 50%', rotate: baseRotation },
-      {
-        ease: 'none',
-        rotate: 0,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: 'top bottom',
-          end: rotationEnd,
-          scrub: true
-        }
-      }
-    );
+    lineEls.forEach((line, i) => {
+      const startPos = `${i * 100}% top`;
+      const endPos = `${(i + 1) * 100}% top`;
 
-    const wordElements = el.querySelectorAll('.word');
-
-    gsap.fromTo(
-      wordElements,
-      { opacity: baseOpacity, willChange: 'opacity' },
-      {
-        ease: 'none',
-        opacity: 1,
-        stagger: 0.05,
-        scrollTrigger: {
-          trigger: el,
-          scroller,
-          start: 'top bottom-=20%',
-          end: wordAnimationEnd,
-          scrub: true
-        }
-      }
-    );
-
-    if (enableBlur) {
       gsap.fromTo(
-        wordElements,
-        { filter: `blur(${blurStrength}px)` },
+        line,
+        { opacity: baseOpacity, filter: enableBlur ? `blur(${blurStrength}px)` : 'none' },
         {
-          ease: 'none',
+          opacity: 1,
           filter: 'blur(0px)',
-          stagger: 0.05,
+          ease: 'power1.out',
           scrollTrigger: {
-            trigger: el,
-            scroller,
-            start: 'top bottom-=20%',
-            end: wordAnimationEnd,
-            scrub: true
-          }
+            trigger: line,
+            start: 'top 80%',
+            end: 'top 20%',
+            scrub: true,
+          },
         }
       );
-    }
+
+      // fade back out
+      gsap.to(line, {
+        opacity: 0,
+        filter: enableBlur ? `blur(${blurStrength}px)` : 'none',
+        ease: 'power1.in',
+        scrollTrigger: {
+          trigger: line,
+          start: 'top 30%',
+          end: 'top 0%',
+          scrub: true,
+        },
+      });
+    });
 
     return () => {
       ScrollTrigger.getAll().forEach(trigger => trigger.kill());
     };
-  }, [scrollContainerRef, enableBlur, baseRotation, baseOpacity, rotationEnd, wordAnimationEnd, blurStrength]);
+  }, [baseOpacity, enableBlur, blurStrength]);
 
   return (
-    <h2 ref={containerRef} className={`scroll-reveal ${containerClassName}`}>
-      <p className={`scroll-reveal-text ${textClassName}`}>{splitText}</p>
-    </h2>
+    <div ref={containerRef} className="scroll-reveal-container">
+      {lines.map((line, i) => (
+        <div className="scroll-line" key={i}>
+          {line}
+        </div>
+      ))}
+    </div>
   );
 };
 
 export default ScrollReveal;
+

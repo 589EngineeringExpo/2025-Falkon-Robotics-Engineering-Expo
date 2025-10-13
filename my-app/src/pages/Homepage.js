@@ -1,39 +1,28 @@
 import '../App.css';
-import ScrollReveal from '../components/ScrollReveal.js';
+import ScrollReveal from '../components/ScrollReveal';
 import '../components/ScrollReveal.css';
+
 export function Homepage() {
-<ScrollReveal
-  baseOpacity={0}
-  enableBlur={true}
-  baseRotation={5}
-  blurStrength={10}
+  return (
+    <p style={{ color: '#000000ff' }}>
+    <div className="app-container" style={{ minHeight: "400vh", paddingTop: "100px" }}>
+         <span className="flex-item">=====================================================</span>
+      <ScrollReveal
+       enableBlur={true}
+        blurStrength={10}
 >
-</ScrollReveal>
-
-    return (
-       <div className="app-container">
-            <div className="row">
-                <span className="flex-item">Welcome!</span>
-            </div>
-            <div style={{ height: "0vh" }}></div>
-            <div className="row">
-
-            </div>
-    <ScrollReveal
->
-  When does a man die? When he is hit by a bullet? No! When he suffers a disease?
-  No! When he ate a soup made out of a poisonous mushroom?
-  No! A man dies when he is forgotten!
-</ScrollReveal>
-
-            <div style={{ height: "100vh" }}></div>
-
-        </div>
-        
-    );
-    
+{`Hello! Please scroll down
+We are Falkon robotic.
+a high school led robotics team.
+Our mission is to educate everyone interested about STEAM.
+This event is a carnival style event meant for K–12th grade.
+All booths will either have an activity or be a community booth.`}
+      </ScrollReveal>
+      <span className="flex-item">=====================================================</span>
+    </div>
+    </p>
+  );
 }
 
-        
-
 export default Homepage;
+

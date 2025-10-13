@@ -1,13 +1,22 @@
-.scroll-reveal {
-  margin: 10px 0;
+.scroll-reveal-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 10vh; /* space between lines */
+  min-height: 150vh; /* extend scroll length */
+  width: 100%;
 }
 
-.scroll-reveal-text {
-  font-size: clamp(1.6rem, 4vw, 3rem);
-  line-height: 1.5;
+.scroll-line {
+  font-size: clamp(1.8rem, 4vw, 3rem);
+  line-height: 1.4;
   font-weight: 600;
-}
-
-.word {
-  display: inline-block;
+  color: white;
+  text-align: center;
+  opacity: 0;
+  filter: blur(10px);
+  will-change: opacity, filter;
+  width: 80%;
+  margin: 0 auto;
 }
