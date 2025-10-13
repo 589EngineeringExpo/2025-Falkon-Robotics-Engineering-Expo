@@ -1,7 +1,8 @@
 const { Booth } = require("./database");
 
 async function validateBoothData(data) {
-    const requiredFields = ["id", "name", "description", "createdBy", "location", "volunteers", "image", "type"];
+    const requiredFields = ["id", "name", "description", "createdBy", "location", "boothRunners", "boothImage", "boothCategory"]; // Looks for these fields to validate
+
     for (const field of requiredFields) {
         if (!(field in data)) {
             return { valid: false, message: `Missing required field: ${field}` };
@@ -56,6 +57,7 @@ async function deleteAllBooths() {
     return await Booth.deleteMany({});
 }
 module.exports = {
+    validateBoothData,
     createBooth,
     getAllBooths,
     getBoothById,

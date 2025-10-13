@@ -4,8 +4,9 @@ require("./server/api/db/database").connectDB();
 const { createBearerToken } = require("./server/api/db/authTokens.js");
 
 async function generateAdminBearerToken() {
-    const token = await createBearerToken("ADMIN");
+    const token = await createBearerToken("ADMIN", true, true);
     console.log("Generated admin bearer token:", token.token);
+    console.log("This token has full admin and host privileges.");
     console.log("From now on, create new tokens via the /api/admin/createToken endpoint with a proper name.");
     console.log("This token has been assigned to 'ADMIN'. I advise creating a new token with your name and deleting this one.");
     console.log(token.token);

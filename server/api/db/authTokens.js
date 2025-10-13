@@ -11,10 +11,8 @@ async function createBearerToken(assignedTo, isAdmin = false, isHost = false) { 
         //creates a constant var called newToken then assigns it to the person
         token: generateRandomString(8),
         assignedTo: assignedTo,
-        roles: {
-            isAdmin: isAdmin,
-            isHost: isHost
-        }
+        isAdmin: isAdmin,
+        isHost: isHost
     });
     //waits for the newToken thing to run fully then stores it in the data base
     await newToken.save();
