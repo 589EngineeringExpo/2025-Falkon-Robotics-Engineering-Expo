@@ -183,10 +183,9 @@
  *     tags: [Booths]
  *     parameters:
  *       - in: query
- *         name: int
- *         Volunteer name: id
+ *         name: id
  *         schema:
- *           type: int
+ *           type: integer
  *         required: true
  *         description: Booth ID
  *     responses:
@@ -377,6 +376,60 @@
  *                   example: Error message
  */
 
+/**
+ * @swagger
+ * /api/booths/deleteBooth:
+ *   delete:
+ *     summary: Delete a booth by ID
+ *     description: Deletes a booth identified by the given ID. Requires bearer authentication and host privileges.
+ *     tags:
+ *       - Booths
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The ID of the booth to delete
+ *     responses:
+ *       200:
+ *         description: Booth successfully deleted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Booth 123 deleted.
+ *       400:
+ *         description: Missing booth ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: id is required
+ *       401:
+ *         description: Unauthorized - Invalid or missing bearer token
+ *       403:
+ *         description: Forbidden - User is not a host
+ *       404:
+ *         description: Booth not found or other error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Booth not found
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -402,6 +455,7 @@ passport.use(new BearerStrategy(
 ));
 
 const { createBooth, getAllBooths, getBoothById, deleteBoothById, validateBoothData } = require("../db/booths"); // Importing booth functions
+const { checkAdmin, checkHost } = require("../middleware/checkAdmin"); // Middleware to check admin/host status
 const { isAdmin } = require("../db/authTokens");
 
 router.get("/all", (req, res) => {
@@ -423,51 +477,42 @@ router.get("/get", (req, res) => {
     .catch(err => res.status(500).json({ error: err.message }));
 });
 
-router.post("/createBooth", passport.authenticate('bearer', { session: false }), (req, res) => {
-    if (req.user.isHost) {
-        createBooth(req.body)
-            .then(booth => res.status(201).json({ success: true }))
-            .catch(err => res.status(500).json({ success: false, error: err.message }));
+router.post("/createBooth", passport.authenticate('bearer', { session: false }), checkHost, (req, res) => {
+    createBooth(req.body)
+        .then(booth => res.status(201).json({ success: true }))
+        .catch(err => res.status(500).json({ success: false, error: err.message }));
+    return;
+});
+
+router.patch("/updateBooth", passport.authenticate('bearer', { session: false }), checkHost, async (req, res) => {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: "Booth ID is required" });
+
+    if (validateBoothData(req.body).valid === false) {
+        return res.status(400).json({ error: validateBoothData(req.body).message });
+    }
+    else {
+        try {
+            const booth = await deleteBoothById(id).then(() => createBooth(req.body));
+            if (!booth) return res.status(404).json({ error: "Booth not found" });
+            res.status(200).json(booth);
+        } catch (err) {
+            res.status(500).json({ error: err.message });
+        }
         return;
     }
-    res.status(403).json({ success: false, error: "Forbidden: User is not a HOST" });
 });
 
-router.patch("/updateBooth", passport.authenticate('bearer', { session: false }), async (req, res) => {
-    if (req.user.isHost) {
-        const { id } = req.query;
-        if (!id) return res.status(400).json({ error: "Booth ID is required" });
+router.delete("/deleteBooth", passport.authenticate('bearer', { session: false }), checkHost, async (req, res) => {
+    const { id } = req.query;
+    if (!id) return res.status(400).json({ error: "id is required" });
 
-        if (validateBoothData(req.body).valid === false) {
-            return res.status(400).json({ error: validateBoothData(req.body).message });
-        }
-        else {
-            try {
-                const booth = await deleteBoothById(id).then(() => createBooth(req.body));
-                if (!booth) return res.status(404).json({ error: "Booth not found" });
-                res.status(200).json(booth);
-            } catch (err) {
-                res.status(500).json({ error: err.message });
-            }
-            return;
-        }
+    try {
+        await deleteBoothById(id);
+        res.status(200).json({ message: `Booth ${id} deleted.` });
+    } catch (err) {
+        res.status(404).json({ error: err.message });
     }
-    return res.status(403).json({ error: "Forbidden: User is not a HOST" });
-});
-
-router.delete("/deleteBooth", async (req, res) => {
-    if (req.user.role === "host") {
-        const { id } = req.query;
-        if (!id) return res.status(400).json({ error: "id is required" });
-
-        try {
-            await deleteBooth(id);
-            res.status(200).json({ message: `Booth ${id} deleted.` });
-        } catch (err) {
-            res.status(404).json({ error: err.message });
-        }
-    }
-    return res.status(403).json({ error: "Forbidden: User is not a HOST" });
 });
 
 module.exports = router;

@@ -10,6 +10,16 @@
 
 /**
  * @swagger
+ * components:
+ *   securitySchemes:
+ *     bearerAuth:
+ *       type: http
+ *       scheme: bearer
+ *       bearerFormat: JWT
+ */
+
+/**
+ * @swagger
  * /api/admin/createToken:
  *   get:
  *     summary: Create a new bearer token
@@ -77,6 +87,68 @@
  *                   example: "Forbidden: User is not an ADMIN or HOST"
  */
 
+/**
+ * @swagger
+ * /api/admin/deleteToken:
+ *   delete:
+ *     summary: Delete a bearer token
+ *     description: >
+ *       Deletes an existing bearer token.  
+ *       - **Only hosts** can delete tokens.
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: token
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The bearer token to delete.
+ *     responses:
+ *       200:
+ *         description: Token deleted successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Token deleted
+ *       400:
+ *         description: Missing required query parameter
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: token is required
+ *       404:
+ *         description: Token not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Token not found
+ *       403:
+ *         description: Forbidden - insufficient privileges
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: User is not a HOST"
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -102,6 +174,7 @@ passport.use(new BearerStrategy(
 ));
 
 const { createBearerToken, deleteBearerToken, findBearerToken } = require("../db/authTokens");
+const { checkAdmin, checkHost } = require("../middleware/checkAdmin"); // Middleware to check admin/host status
 
 router.get("/createToken", passport.authenticate('bearer', { session: false }), async (req, res) => {
     if (!req.query.assignedTo || !req.query.isAdmin || !req.query.isHost) {
@@ -117,12 +190,16 @@ router.get("/createToken", passport.authenticate('bearer', { session: false }), 
     res.status(201).json({ message: "Token created", tokenData: token });
 });
 
-router.delete("/deleteToken", passport.authenticate('bearer', { session: false }), async (req, res) => {
-  const { token } = req.query;
-  if (!token) return res.status(400).json({ error: "token is required" });
-
-  await deleteBearerToken(token);
-  res.status(200).json({ message: "Token deleted" });
+router.delete("/deleteToken", passport.authenticate('bearer', { session: false }), checkHost, async (req, res) => {
+    const { token } = req.query;
+    if (!token) {
+        return res.status(400).json({ error: "token is required" });
+    }
+    if (await findBearerToken(token) === null) {
+        return res.status(404).json({ error: "Token not found" });
+    }
+    await deleteBearerToken(token);
+    res.status(200).json({ message: "Token deleted" });
 });
 
 module.exports = router;

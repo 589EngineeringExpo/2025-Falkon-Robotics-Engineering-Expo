@@ -53,27 +53,6 @@ const boothSchema = new mongoose.Schema({
     },
 });
 
-// Volunteer Schema (this includes admin)
-
-const volunteerSchema = new mongoose.Schema({
-    //token is basically a password for that individual so not everyone can change stuff
-    token:{ type: String, required: true, unique: true },
-    //when its assigned + who its assignedto
-    createdAt: { type: Date, default: Date.now},
-    //only some are assigned to booths cuz managers arent assigned to deal with other stuff
-    assignedTo: { type: String, required: true, default: "Unnamed" },
-    id: { type: Number, required: true, unique: true },
-    name: { type: String, required: true, default: "Unnamed" },
-    jobs: {
-        isAssignedToBooth: { type: Boolean, required: false, default: false },
-        boothID: { type: Number, required: false, default: null },
-        jobDescription: { type: String, required: false, default: "Unassigned" },
-    },
-    
-    
-});
-
-
 // Bearer Token Schema
 
 const bearerTokenSchema = new mongoose.Schema({
@@ -89,6 +68,5 @@ const bearerTokenSchema = new mongoose.Schema({
 module.exports = {
     connectDB,
     Booth: mongoose.model("Booth", boothSchema),
-    Volunteer: mongoose.model("Volunteer", volunteerSchema),
     BearerToken: mongoose.model("BearerToken", bearerTokenSchema),
 };
