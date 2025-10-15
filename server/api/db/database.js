@@ -6,6 +6,10 @@ const mongoose = require("mongoose");
 //connectDB is just a way to show if connection works or doesnt
 //console.log just prints the following quote in console 
 async function connectDB(){
+    if (process.env.DB_ENABLED === 'false') {
+        console.log("Database connection is disabled. Set DB_ENABLED=true in the .env file to enable.");
+        return;
+    }
     try {
         console.log("** Attempting to connect to MongoDB **")
         await mongoose.connect(mongoURI, { serverSelectionTimeoutMS: 5000 }); // 5 seconds timeout
@@ -18,6 +22,7 @@ async function connectDB(){
     } catch (error) {
         console.error("MongoDB connection error:", error);
         console.error("Ensure that MongoDB is running and that the MONGODB_URI in the .env file is correct.");
+        console.error("Don't need backend running? Check the .env file and set DB_ENABLED=false");
         process.exit(1);
     }
 };
