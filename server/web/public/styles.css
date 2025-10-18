@@ -1,42 +1,21 @@
-body{
- background: #eee;
+body {
+    background-color: #eee;
 }
-
-#side_nav{
- background: #000;
- min-width: 250px;
- max-width: 250px;
- transition: all 0.3s;
+.map {
+    height: 50vh;
 }
-.content{
-   min-height: 100vh;
-   width: 100%;
+.map-filter {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1000;
+    color: #000000;
+    background-color: transparent;
 }
-hr.h-color{
-  background: #eee;
-}
-
-.sidebar li.active{
-   background: #eee;
-   border-radius: 8px;
-}
-
-.sidebar li.active a, .sidebar li.active a:hover {
- color: #000;
-}
-.sidebar li a{
- color: #fff;
-}
-
-@media(max-width: 767px){
- #side_nav{
-   margin-left: -250px;
-   position: absolute;
-   min-height: 100vh;
-   z-index: 1;
-
- }
- #side_nav.active{
-   margin-left: 0;
-  }
+.map-filter a {
+    background-color: rgba(255, 255, 255, 0.8);
+    margin-top: 4px;
+    padding: 4px;
+    border-top-right-radius: 8px;
+    border-bottom-right-radius: 8px;
 }
