@@ -19,3 +19,15 @@ body {
     border-top-right-radius: 8px;
     border-bottom-right-radius: 8px;
 }
+.activities-filter-btn.active {
+    background-color: #40a2c5;
+    color: #1e3a98;
+}
+.community-filter-btn.active {
+    background-color: #cab993;
+    color: #55452c;
+}
+.food-filter-btn.active {
+    background-color: #824444;
+    color: #2e0404;
+}
