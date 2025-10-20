@@ -6,10 +6,10 @@
     <link rel="icon" type="image/x-icon" href="/src/favicon.ico">
 
     <!-- jQuery & Popper -->
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.7.1/dist/jquery.min.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.14.7/dist/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap ***4*** -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.3.1/dist/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
 
@@ -22,37 +22,141 @@
     <script src="./script.js" defer></script>
 </head>
 <body>
-    <div class="container mt-5">
-        <div class="d-flex align-items-center mb-4">
+    <div class="container">
+        <div class="d-flex align-items-center">
             <img src="/src/logo.png" alt="Falkon Robotics Logo" class="mr-3 rounded" style="width:64px; height:64px;">
             <h1 class="display-4">Engineering Expo</h1>
         </div>
     </div>
 
     <!-- Login Form -->
-    <div class="container mt-5 input-group mb-3" id="adminKeyInputGroup">
-        <label for="validationCustomUsername" class="form-label">Admin Key</label>
-            <div class="input-group has-validation">
-                <input type="text" class="form-control" id="adminKey" required>
-                <div class="input-group-append">
-                    <button class="btn btn-outline-secondary" type="button" id="loginBtn">Login</button>
-                </div>
-                <div class="invalid-feedback">Invalid Admin Key</div>
+    <div class="container input-group" id="adminKeyInputGroup">
+        <label for="adminKey" class="form-label">Admin Key</label>
+        <div class="input-group has-validation">
+            <input type="text" class="form-control" id="adminKey" required>
+            <div class="input-group-append">
+                <button class="btn btn-outline-secondary" type="button" id="loginBtn">Login</button>
             </div>
+            <div class="invalid-feedback">Invalid Admin Key</div>
         </div>
     </div>
 
     <!-- Account Info -->
-    <div class="container mt-3" id="accountInfo">
+    <div class="container py-5 volunteerInputs" id="accountInfo">
         <h3><span id="nameDisplay" class="fw-bold text-capitalize"></span> - <span id="roleDisplay" class="text-muted"></span></h3>
+        <button class="btn btn-danger" type="button" id="logoutBtn">Logout</button>
     </div>
 
     <!-- Booth Configuration -->
-    <div class="container mt-3">
-        <button class="btn btn-primary" type="button" data-bs-toggle="collapse" data-bs-target="#boothCollapse"><p class="mb-0">Booth Configuration</p></button>
-        <div class="collapse" id="boothCollapse">
-            <div class="card card-body">
-                Some placeholder content for the collapse component. This panel is hidden by default but revealed when the user activates the relevant trigger.
+    <div class="container py-5 volunteerInputs">
+        <h2>Booth Configuration</h2>
+        <div>
+            <div>
+                <button class="btn btn-outline-secondary my-3" id="getBoothsBtn">Get All Booths</button>
+                <ul class="list-group boothList d-flex" id="boothList"></ul>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary my-3" id="addBoothBtn" data-toggle="collapse" data-target="#addBoothCollapse">Add New Booth</button>
+                <div class="collapse" id="addBoothCollapse">
+                    <div class="card card-body">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">ID</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Booth ID" id="addBoothID">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Name</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Booth Name" id="addBoothName">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Description</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Booth Description" id="addBoothDescription">
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Category</span>
+                            </div>
+                            <select class="custom-select" id="addBoothCategory">
+                                <option selected value="0">Community</option>
+                                <option value="1">Food</option>
+                                <option value="2">Activity</option>
+                                <option value="3">Popup</option>
+                            </select>
+                        </div>
+                        <button class="btn btn-primary mt-3" id="addBoothSubmitBtn">Add Booth</button>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button class="btn btn-outline-secondary my-3" id="addBoothPhysical" data-toggle="collapse" data-target="#addBoothPhysicalCollapse">Add Booth Coordinates & Image</button>
+                <div class="collapse" id="addBoothPhysicalCollapse">
+                    <div class="card card-body">
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Booth ID</span>
+                            </div>
+                            <input type="text" class="form-control" placeholder="Booth ID" id="editBoothID">
+                        </div>
+                        <p id="editBoothName"></p>
+                        <div class="map input-group mb-3">
+                            <div class="input-group addBoothCoordinates">
+                                <div class="input-group-prepend">
+                                    <span class="input-group-text">Coordinates</span>
+                                </div>
+                                <input type="text" class="form-control" placeholder="Lat" id="addBoothCoordinatesX">
+                                <input type="text" class="form-control" placeholder="Long" id="addBoothCoordinatesY">
+                            </div>
+                        </div>
+                        <div class="input-group mb-3">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text">Image</span>
+                            </div>
+                            <div class="custom-file">
+                                <input type="file" class="custom-file-input" id="editBoothImageUpload">
+                                <label class="custom-file-label" id="editBoothImageUploadLabel" for="editBoothImageUpload">Upload Image</label>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary mt-3" id="editBoothSubmitBtn">Edit Booth</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Configuration -->
+    <div class="container py-5 volunteerInputs">
+        <h2>Admin Configuration</h2>
+        <div>
+            <button class="btn btn-outline-secondary my-3" id="createAdminBtn" data-toggle="collapse" data-target="#createAdminCollapse">Create Admin Token</button>
+            <div class="collapse" id="createAdminCollapse">
+                <div class="card card-body">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Name (First Last)</span>
+                        </div>
+                        <input type="text" class="form-control" placeholder="Admin Name" id="adminCreateName">
+                    </div>
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Role</span>
+                        </div>
+                        <select class="custom-select" id="adminCreateRole">
+                            <option selected value="0">Volunteer</option>
+                            <option value="1">Admin</option>
+                            <option value="2">Host</option>
+                        </select>
+                    </div>
+                    <button class="btn btn-primary mt-3" id="addAdminBtn">Create</button>
+                    <div class="mb-3 container">
+                        <h2 id="adminTokenOutput"></h2>
+                        <p id="adminTokenNameOutput" class="text-muted"></p>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
