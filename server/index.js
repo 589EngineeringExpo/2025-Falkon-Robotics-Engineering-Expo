@@ -1,1 +1,1 @@
-require('./api/server'); // API server for API requests
+require('./api/server'); // API server for API requests (Imports frontend from there as well)

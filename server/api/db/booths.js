@@ -1,27 +1,16 @@
 const { Booth } = require("./database");
+const multer = require('multer');
+const fs = require('fs');
+const path = require('path');
 
-async function validateBoothData(data) {
-    const requiredFields = ["id", "name", "description", "createdBy", "location", "boothRunners", "boothImage", "boothCategory"]; // Looks for these fields to validate
-
-    for (const field of requiredFields) {
-        if (!(field in data)) {
-            return { valid: false, message: `Missing required field: ${field}` };
-        }
-    }
-    return { valid: true };
-}
-
-async function createBooth(data) { // Following the format in validateBoothData()
-    const validation = await validateBoothData(data);
-    if (!validation.valid) {
-        return validation.message;
-    }
+async function createBooth(data) {
     const newBooth = new Booth(data);
     return newBooth.save();
 }
 //all .save() is just storing it in the database and return just returns it
 async function getAllBooths() {
     const booths = await Booth.find().select("id name location boothCategory");
+    booths.sort((a, b) => a.id - b.id);
     return booths;
 }
 
@@ -56,13 +45,20 @@ async function deleteBoothById(boothId) {
 async function deleteAllBooths() {
     return await Booth.deleteMany({});
 }
+async function uploadBoothImage(boothID, image) {
+    const targetPath = path.join(__dirname, "../../web/public/src/uploads/", `booth_${boothID}${path.extname(image.originalname)}`);
+    fs.renameSync(image.path, targetPath);
+    const imageUrl = `/src/uploads/booth_${boothID}${path.extname(image.originalname)}`;
+    await Booth.findOneAndUpdate({ id: boothID }, { boothImage: imageUrl });
+    return imageUrl;
+}
 module.exports = {
-    validateBoothData,
     createBooth,
     getAllBooths,
     getBoothById,
     changeQueue,
     deleteBoothById,
     deleteAllBooths,
-    getQueue
+    getQueue,
+    uploadBoothImage
 };

@@ -10,6 +10,7 @@ const swaggerJsdoc = require('swagger-jsdoc'); // Generates documentation from c
 const path = require('path');
 
 const routes = require('./routes'); // Importing routes from a separate folder. See routes/index.js
+const frontendRoutes = require('../web/handler'); // Importing frontend routes
 const { port, apiPrefix, baseURL, rateLimitIntervals, rateLimitMaxRequests, rateLimitMaxSize, node_env } = require('./config/settings'); // Importing settings
 const { connect } = require('mongoose');
 const connectDB = require('./db/database').connectDB; // Database connection
@@ -28,7 +29,23 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 
-app.use(helmet());
+app.use( // Security headers. Allows these sources to load.
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                "default-src": ["'self'"],
+                "script-src": ["'self'", "https:", "cdn.jsdelivr.net", "code.jquery.com", "'unsafe-inline'"],
+                "style-src": ["'self'", "https:", "cdn.jsdelivr.net", "code.jquery.com", "'unsafe-inline'"],
+                "connect-src": ["'self'", "https:", "cdn.jsdelivr.net", "code.jquery.com"],
+                "img-src": ["'self'", "data:", "https:"],
+                "font-src": ["'self'", "https:", "cdn.jsdelivr.net"],
+                "object-src": ["'none'"],
+                "base-uri": ["'self'"],
+                "frame-ancestors": ["'none'"]
+            },
+        },
+    })
+);
 app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json({ limit: rateLimitMaxSize }));
@@ -44,7 +61,8 @@ if (node_env === 'development') {
 }
 
 connectDB(); // Establish database connection
-app.use(apiPrefix, routes);
+app.use(apiPrefix, routes); // For all routes defined in routes/index.js; prefix with /api
+app.use(frontendRoutes); // Frontend routes
 
 app.listen(port, () => {
     console.log(`Server is running on port ${port}`);
