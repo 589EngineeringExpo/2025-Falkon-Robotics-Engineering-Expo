@@ -477,17 +477,18 @@ async function setFields(apiKey) {
     // Admin Token Creation
     document.getElementById('addAdminBtn').addEventListener('click', function() {
         let role = document.getElementById('adminCreateRole').value;
+        console.log(role);
         let admin = false;
         let host = false;
-        if (role === 0) {
+        if (role == 0) {
             admin = false;
             host = false;
         }
-        else if (role === 1) {
+        else if (role == 1) {
             admin = true;
             host = false;
         }
-        else if (role === 2) {
+        else if (role == 2) {
             admin = true;
             host = true;
         }
