@@ -10,6 +10,7 @@ map.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
 let userMarker, accuracyCircle;
 
 map.locate({ setView: false, maxZoom: 16, enableHighAccuracy: true });
+
 if (map.zoomControl) {
     map.removeControl(map.zoomControl);
 }
@@ -64,13 +65,44 @@ var foodIcon = L.icon({
     iconUrl: 'src/foodIcon.svg',
     iconSize: [32, 32],
 });
+var communityIcon = L.icon({
+    iconUrl: 'src/communityIcon.svg',
+    iconSize: [32, 32],
+});
+var activitiesIcon = L.icon({
+    iconUrl: 'src/activitiesIcon.svg',
+    iconSize: [32, 32],
+});
 
-function addMarker(lat, lng, popupText) {
-    const marker = L.marker([lat, lng], {
-        icon: foodIcon
-    }).addTo(map);
-    if (popupText) {
-        marker.bindPopup(popupText);
+function addMarker(lat, lng, category, popupText, id) {
+    console.log(category)
+    let marker;
+    if (category == 0) {
+        marker = L.marker([lat, lng], {
+            icon: communityIcon
+        }).addTo(map);
+        marker.on('click', function () {
+            console.log('Marker clicked ', id);
+            scrollToBooth(id);
+        });
+    }
+    if (category == 1) {
+        marker = L.marker([lat, lng], {
+            icon: foodIcon
+        }).addTo(map);
+        marker.on('click', function () {
+            console.log('Marker clicked ', id);
+            scrollToBooth(id);
+        });
+    }
+    if (category == 2) {
+        marker = L.marker([lat, lng], {
+            icon: activitiesIcon
+        }).addTo(map);
+        marker.on('click', function () {
+            console.log('Marker clicked ', id);
+            scrollToBooth(id);
+        });
     }
 }
 function removeAllMarkers() {
@@ -95,8 +127,40 @@ function updateMap() {
     document.getElementsByClassName('activities-filter-btn')[0].classList.toggle('active', activitiesVisible);
     document.getElementsByClassName('community-filter-btn')[0].classList.toggle('active', communityVisible);
     document.getElementsByClassName('food-filter-btn')[0].classList.toggle('active', foodVisible);
+
+    if (!communityVisible && !foodVisible && !activitiesVisible) {
+        refreshBoothMaps(-1);
+    }
+    else if (communityVisible && !foodVisible && !activitiesVisible) {
+        refreshBoothMaps(0);
+    }
+    else if (!communityVisible && foodVisible && !activitiesVisible) {
+        refreshBoothMaps(1);
+    }
+    else if (!communityVisible && !foodVisible && activitiesVisible) {
+        refreshBoothMaps(2);
+    }
+    else if (communityVisible && foodVisible && !activitiesVisible) {
+        refreshBoothMaps(0);
+        refreshBoothMaps(1, false);
+    }
+    else if (!communityVisible && foodVisible && activitiesVisible) {
+        refreshBoothMaps(1);
+        refreshBoothMaps(2, false);
+    }
+    else if (communityVisible && !foodVisible && activitiesVisible) {
+        refreshBoothMaps(0);
+        refreshBoothMaps(2, false);
+    }
+    else if (communityVisible && foodVisible && activitiesVisible) {
+        refreshBoothMaps(-1);
+    }
 }
 
+function findOnMap(lat, long) {
+    console.log("Refreshing booth maps for location:", lat, long);
+    map.setView([lat, long], 21);
+}
 function toggleActivities() {
     activitiesVisible = !activitiesVisible;
     updateMap();
@@ -113,3 +177,110 @@ function toggleFood() {
 document.getElementsByClassName('activities-filter-btn')[0].addEventListener('click', toggleActivities);
 document.getElementsByClassName('community-filter-btn')[0].addEventListener('click', toggleCommunity);
 document.getElementsByClassName('food-filter-btn')[0].addEventListener('click', toggleFood);
+
+// Fill booths
+
+function scrollToBooth(id) {
+    const boothElement = document.getElementById(`booth-details-${id}`);
+    if (boothElement) {
+        // Expand the booth details if collapsed
+        if (!boothElement.classList.contains('show')) {
+            updateBoothDetails(id);
+            boothElement.classList.add('show');
+        }
+        document.getElementById(`booth-details-${id}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+}
+
+function updateBoothDetails(boothId) {
+    console.log("Updating booth id: ", boothId);
+    fetch(`/api/booths/get/?id=${boothId}`)
+        .then(response => response.json())
+        .then(booth => {
+            console.log("Booth data:", booth);
+            const detailsDiv = document.getElementById(`booth-details-${boothId}`);
+            detailsDiv.innerHTML = `
+                <div class="row">
+                    <div class="col">
+                        <img src="${booth[0].boothImage}" alt="Booth Image" style="width: 100%; height: auto;">
+                    </div>
+                    <div class="col">
+                        <p><b>Description:</b> ${booth[0].description}</p>
+                        <p><b>Category:</b> ${booth[0].boothCategory == 0 ? 'Community' : booth[0].boothCategory == 1 ? 'Food' : 'Activities'}</p>
+                        <button id="button${booth[0].id}">Find on Map</button>
+                    </div>
+                </div>
+            `;
+            document.getElementById(`button${booth[0].id}`).addEventListener('click', () => {
+                findOnMap(booth[0].location[0].x, booth[0].location[0].y);
+            });
+        });
+}
+
+let boothData;
+fetch('/api/booths/all')
+    .then(response => response.json())
+    .then(data => {
+        console.log(data);
+        boothData = data
+        // Add all booths to the map initially
+        refreshBoothMaps(-1);
+        // Populate booth list
+        for (const booth of boothData) {
+            const activitiesList = document.getElementById("activities-info");
+            const foodList = document.getElementById("food-info");
+            const communityList = document.getElementById("community-info");
+            const boothItem = document.createElement("li");
+            const moreButton = document.createElement("button");
+            moreButton.type = "button";
+            moreButton.classList.add("btn", "btn-link", "p-0");
+            moreButton.style.float = "none";
+            moreButton.setAttribute('data-toggle', 'collapse');
+            moreButton.setAttribute('data-target', `#booth-details-${booth.id}`);
+            moreButton.addEventListener('click', () => updateBoothDetails(booth.id));
+            moreButton.innerText = " More";
+            boothItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+            const nameSpan = document.createElement("span");
+            nameSpan.textContent = booth.name;
+
+            boothItem.style.listStyleType = "none";
+            boothItem.appendChild(nameSpan);
+            boothItem.appendChild(moreButton);
+            if (booth.boothCategory == 0) {
+                communityList.appendChild(boothItem);
+            }
+            if (booth.boothCategory == 1) {
+                foodList.appendChild(boothItem);
+            }
+            if (booth.boothCategory == 2) {
+                activitiesList.appendChild(boothItem);
+            }
+
+            // Make collapsible details
+            const detailsDiv = document.createElement("div");
+            detailsDiv.classList.add("collapse", "card");
+            detailsDiv.id = `booth-details-${booth.id}`;
+            if (booth.boothCategory == 0) {
+                communityList.appendChild(detailsDiv);
+            }
+            if (booth.boothCategory == 1) {
+                foodList.appendChild(detailsDiv);
+            }
+            if (booth.boothCategory == 2) {
+                activitiesList.appendChild(detailsDiv);
+            }
+        }
+    });
+
+function refreshBoothMaps(category, removeMarkers = true) {
+    if (removeMarkers) {
+        removeAllMarkers();
+    }
+    for (const booth of boothData) {
+        if (category == -1 || booth.boothCategory == category) {
+            console.log("Adding booth:", booth);
+            addMarker(booth.location[0].x, booth.location[0].y, booth.boothCategory, `${booth.description}`, booth.id);
+        }
+    }
+}
+

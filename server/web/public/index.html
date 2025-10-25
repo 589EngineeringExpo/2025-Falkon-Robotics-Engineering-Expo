@@ -26,6 +26,10 @@
 <body>
     <div class="fluid-container map-container">
         <div class="map"></div>
+        <div class="d-flex align-items-center justify-content-end w-100 logo-title">
+            <img src="/src/logo.png" alt="Falkon Robotics Logo" class="rounded mr-1" style="width:36px; height:36px; object-fit:cover;">
+            <p class="mb-0" style="font-size:0.9rem; font-weight:600;">Engineering Expo</p>
+        </div>
         <div class="map-filter">
             <ul class="nav flex-column">
                 <li class="nav-item">
@@ -38,6 +42,22 @@
                     <a class="nav-link food-filter-btn" href="#">Food</a>
                 </li>
             </ul>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row"></div>
+            <div class="col">
+                <h2>Activities</h2>
+                <ul id="activities-info" class="list-group"></ul>
+            </div>
+            <div class="col">
+                <h2>Food</h2>
+                <ul id="food-info" class="list-group d-flex"></ul>
+            </div>
+            <div class="col">
+                <h2>Community</h2>
+                <ul id="community-info" class="list-group d-flex"></ul>
+            </div>
         </div>
     </div>
 </body>
