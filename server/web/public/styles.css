@@ -4,6 +4,12 @@ body {
 .map {
     height: 50vh;
 }
+.logo-title {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    z-index: 1000;
+}
 .map-filter {
     position: absolute;
     top: 0;

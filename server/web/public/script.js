@@ -10,6 +10,7 @@ map.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
 let userMarker, accuracyCircle;
 
 map.locate({ setView: false, maxZoom: 16, enableHighAccuracy: true });
+
 if (map.zoomControl) {
     map.removeControl(map.zoomControl);
 }
@@ -187,7 +188,7 @@ function scrollToBooth(id) {
             updateBoothDetails(id);
             boothElement.classList.add('show');
         }
-        boothElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.getElementById(`booth-details-${id}`).scrollIntoView({ behavior: 'smooth', block: 'start' });
     }
 }
 
@@ -226,7 +227,9 @@ fetch('/api/booths/all')
         refreshBoothMaps(-1);
         // Populate booth list
         for (const booth of boothData) {
-            const boothList = document.getElementById("activities-info");
+            const activitiesList = document.getElementById("activities-info");
+            const foodList = document.getElementById("food-info");
+            const communityList = document.getElementById("community-info");
             const boothItem = document.createElement("li");
             const moreButton = document.createElement("button");
             moreButton.type = "button";
@@ -243,13 +246,29 @@ fetch('/api/booths/all')
             boothItem.style.listStyleType = "none";
             boothItem.appendChild(nameSpan);
             boothItem.appendChild(moreButton);
-            boothList.appendChild(boothItem);
+            if (booth.boothCategory == 0) {
+                communityList.appendChild(boothItem);
+            }
+            if (booth.boothCategory == 1) {
+                foodList.appendChild(boothItem);
+            }
+            if (booth.boothCategory == 2) {
+                activitiesList.appendChild(boothItem);
+            }
 
             // Make collapsible details
             const detailsDiv = document.createElement("div");
             detailsDiv.classList.add("collapse", "card");
             detailsDiv.id = `booth-details-${booth.id}`;
-            boothList.appendChild(detailsDiv);
+            if (booth.boothCategory == 0) {
+                communityList.appendChild(detailsDiv);
+            }
+            if (booth.boothCategory == 1) {
+                foodList.appendChild(detailsDiv);
+            }
+            if (booth.boothCategory == 2) {
+                activitiesList.appendChild(detailsDiv);
+            }
         }
     });
 
