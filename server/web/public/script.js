@@ -64,6 +64,7 @@ map.on('locationerror', function(e) {
 var foodIcon = L.icon({
     iconUrl: 'src/foodIcon.svg',
     iconSize: [32, 32],
+    backgroundColor: 'white'
 });
 var communityIcon = L.icon({
     iconUrl: 'src/communityIcon.svg',
@@ -80,6 +81,7 @@ function addMarker(lat, lng, category, popupText, id) {
     if (category == 0) {
         marker = L.marker([lat, lng], {
             icon: communityIcon
+
         }).addTo(map);
         marker.on('click', function () {
             console.log('Marker clicked ', id);
@@ -104,6 +106,7 @@ function addMarker(lat, lng, category, popupText, id) {
             scrollToBooth(id);
         });
     }
+    marker.bindPopup(popupText);
 }
 function removeAllMarkers() {
     map.eachLayer(function (layer) {
@@ -159,6 +162,7 @@ function updateMap() {
 
 function findOnMap(lat, long) {
     console.log("Refreshing booth maps for location:", lat, long);
+    document.getElementsByClassName("map")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
     map.setView([lat, long], 21);
 }
 function toggleActivities() {
@@ -182,6 +186,10 @@ document.getElementsByClassName('food-filter-btn')[0].addEventListener('click', 
 
 function scrollToBooth(id) {
     const boothElement = document.getElementById(`booth-details-${id}`);
+    // Collapse all collapsible booth details
+    document.querySelectorAll('.collapse').forEach(el => {
+        el.classList.remove('show');
+    });
     if (boothElement) {
         // Expand the booth details if collapsed
         if (!boothElement.classList.contains('show')) {
@@ -207,11 +215,15 @@ function updateBoothDetails(boothId) {
                     <div class="col">
                         <p><b>Description:</b> ${booth[0].description}</p>
                         <p><b>Category:</b> ${booth[0].boothCategory == 0 ? 'Community' : booth[0].boothCategory == 1 ? 'Food' : 'Activities'}</p>
-                        <button id="button${booth[0].id}">Find on Map</button>
+                        <button id="button${booth[0].id}" class="findOnMap btn btn-primary">Find on Map</button>
                     </div>
                 </div>
             `;
             document.getElementById(`button${booth[0].id}`).addEventListener('click', () => {
+                activitiesVisible = false;
+                communityVisible = false;
+                foodVisible = false;
+                updateMap();
                 findOnMap(booth[0].location[0].x, booth[0].location[0].y);
             });
         });
@@ -279,7 +291,7 @@ function refreshBoothMaps(category, removeMarkers = true) {
     for (const booth of boothData) {
         if (category == -1 || booth.boothCategory == category) {
             console.log("Adding booth:", booth);
-            addMarker(booth.location[0].x, booth.location[0].y, booth.boothCategory, `${booth.description}`, booth.id);
+            addMarker(booth.location[0].x, booth.location[0].y, booth.boothCategory, `${booth.name}`, booth.id);
         }
     }
 }
