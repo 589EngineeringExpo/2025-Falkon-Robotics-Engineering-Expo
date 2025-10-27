@@ -29,7 +29,23 @@ const swaggerDocs = swaggerJsdoc(swaggerOptions);
 
 const app = express();
 
-app.use(helmet());
+app.use( // Security headers. Allows these sources to load.
+    helmet({
+        contentSecurityPolicy: {
+            directives: {
+                "default-src": ["'self'"],
+                "script-src": ["'self'", "https:", "cdn.jsdelivr.net", "code.jquery.com", "'unsafe-inline'"],
+                "style-src": ["'self'", "https:", "cdn.jsdelivr.net", "code.jquery.com", "'unsafe-inline'"],
+                "connect-src": ["'self'", "https:", "cdn.jsdelivr.net", "code.jquery.com"],
+                "img-src": ["'self'", "data:", "https:"],
+                "font-src": ["'self'", "https:", "cdn.jsdelivr.net"],
+                "object-src": ["'none'"],
+                "base-uri": ["'self'"],
+                "frame-ancestors": ["'none'"]
+            },
+        },
+    })
+);
 app.use(morgan('combined'));
 app.use(cors());
 app.use(express.json({ limit: rateLimitMaxSize }));

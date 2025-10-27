@@ -1,0 +1,16 @@
+body {
+    background-color: #eee;
+}
+.logo {
+    width: 64px;
+    height: 64px;
+}
+.boothList li span {
+    margin-left: 1em;
+}
+.map {
+    padding-top: 100%;
+}
+.addBoothCoordinates {
+    z-index: 1000;
+}

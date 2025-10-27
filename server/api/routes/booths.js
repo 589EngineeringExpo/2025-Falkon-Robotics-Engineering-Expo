@@ -430,6 +430,112 @@
  *                   example: Booth not found
  */
 
+/**
+ * @swagger
+ * /api/booths/nextBoothID:
+ *   get:
+ *     summary: Get next available booth ID
+ *     description: Returns the next available numeric ID for creating a new booth (highest existing ID + 1, or 1 if no booths exist).
+ *     tags:
+ *       - Booths
+ *     responses:
+ *       200:
+ *         description: Next booth ID
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 nextBoothID:
+ *                   type: integer
+ *                   example: 5
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
+/**
+ * @swagger
+ * /api/booths/uploadBoothImage:
+ *   post:
+ *     summary: Upload an image for a booth
+ *     description: Uploads a single image file for a booth. Requires bearer authentication and admin privileges.
+ *     tags:
+ *       - Booths
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         multipart/form-data:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - boothID
+ *               - file
+ *             properties:
+ *               boothID:
+ *                 type: string
+ *                 description: ID of the booth the image belongs to
+ *                 example: "3"
+ *               file:
+ *                 type: string
+ *                 format: binary
+ *                 description: Image file to upload (png, jpg, etc.)
+ *     responses:
+ *       200:
+ *         description: Image uploaded successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 imageURL:
+ *                   type: string
+ *                   format: uri
+ *                   example: "https://expo.cvrobots.com/src/uploads/booth_0.png"
+ *       400:
+ *         description: Missing boothID or file
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Booth ID and image file are required."
+ *       401:
+ *         description: Unauthorized - invalid or missing bearer token
+ *       403:
+ *         description: Forbidden - user is not an admin
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Forbidden: User is not an ADMIN"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -454,7 +560,15 @@ passport.use(new BearerStrategy(
     }
 ));
 
-const { createBooth, getAllBooths, getBoothById, deleteBoothById, validateBoothData } = require("../db/booths"); // Importing booth functions
+const multer = require('multer');
+const path = require('path');
+// Use path.join so separators are correct on all platforms and build an absolute temp directory path
+const tempUploadDir = path.join(__dirname, '..', 'db', 'tempUploadedFiles');
+const upload = multer({
+    dest: tempUploadDir, // Temporary storage location
+});
+
+const { createBooth, getAllBooths, getBoothById, deleteBoothById, uploadBoothImage } = require("../db/booths"); // Importing booth functions
 const { checkAdmin, checkHost } = require("../middleware/checkAdmin"); // Middleware to check admin/host status
 const { isAdmin } = require("../db/authTokens");
 
@@ -487,20 +601,14 @@ router.post("/createBooth", passport.authenticate('bearer', { session: false }),
 router.patch("/updateBooth", passport.authenticate('bearer', { session: false }), checkHost, async (req, res) => {
     const { id } = req.query;
     if (!id) return res.status(400).json({ error: "Booth ID is required" });
-
-    if (validateBoothData(req.body).valid === false) {
-        return res.status(400).json({ error: validateBoothData(req.body).message });
+    try {
+        const booth = await deleteBoothById(id).then(() => createBooth(req.body));
+        if (!booth) return res.status(404).json({ error: "Booth not found" });
+        res.status(200).json(booth);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-    else {
-        try {
-            const booth = await deleteBoothById(id).then(() => createBooth(req.body));
-            if (!booth) return res.status(404).json({ error: "Booth not found" });
-            res.status(200).json(booth);
-        } catch (err) {
-            res.status(500).json({ error: err.message });
-        }
-        return;
-    }
+    return;
 });
 
 router.delete("/deleteBooth", passport.authenticate('bearer', { session: false }), checkHost, async (req, res) => {
@@ -513,6 +621,28 @@ router.delete("/deleteBooth", passport.authenticate('bearer', { session: false }
     } catch (err) {
         res.status(404).json({ error: err.message });
     }
+});
+
+router.get("/nextBoothID", async (req, res) => {
+    getAllBooths()
+        .then(booths => {
+            const nextId = booths.length > 0 ? Math.max(...booths.map(b => b.id)) + 1 : 1; // Grabs the highest booth ID and adds 1, or 1 if no booths exist
+            res.status(200).json({ nextBoothID: nextId });
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
+router.post("/uploadBoothImage", passport.authenticate('bearer', { session: false }), checkAdmin, upload.single("file"), (req, res) => {
+    const image = req.file;
+    const boothID = req.body.boothID;
+
+    if (!boothID || !image) {
+        return res.status(400).json({ error: "Booth ID and image file are required." });
+    }
+
+    uploadBoothImage(boothID, image)
+        .then(imageUrl => res.status(200).json({ success: true, imageURL: imageUrl }))
+        .catch(err => res.status(500).json({ success: false, error: err.message }));
 });
 
 module.exports = router;

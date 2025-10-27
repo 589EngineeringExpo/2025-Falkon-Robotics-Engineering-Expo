@@ -149,6 +149,51 @@
  *                   example: "Forbidden: User is not a HOST"
  */
 
+/**
+ * @swagger
+ * /api/admin/getTokenData:
+ *   get:
+ *     summary: Validate bearer token and retrieve token metadata
+ *     description: >
+ *       Validates the provided bearer token and returns metadata about the token,
+ *       including whether it has admin or host privileges and the assigned user's name.
+ *       Requires a valid bearer token in the Authorization header.
+ *     tags:
+ *       - Admin
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Token is valid — returns token metadata
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 message:
+ *                   type: string
+ *                   example: Token is valid
+ *                 isAdmin:
+ *                   type: boolean
+ *                   description: Whether the token grants admin privileges
+ *                 isHost:
+ *                   type: boolean
+ *                   description: Whether the token grants host privileges
+ *                 name:
+ *                   type: string
+ *                   description: The name assigned to the token (First Last)
+ *       401:
+ *         description: Unauthorized — missing or invalid bearer token
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Unauthorized
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -200,6 +245,11 @@ router.delete("/deleteToken", passport.authenticate('bearer', { session: false }
     }
     await deleteBearerToken(token);
     res.status(200).json({ message: "Token deleted" });
+});
+
+router.get("/getTokenData", passport.authenticate('bearer', { session: false }), async (req, res) => {
+    console.log(req.user)
+    res.status(200).json({ message: "Token is valid", isAdmin: req.user.isAdmin, isHost: req.user.isHost, name: req.user.name });
 });
 
 module.exports = router;

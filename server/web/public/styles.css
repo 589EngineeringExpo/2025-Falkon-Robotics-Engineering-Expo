@@ -1,0 +1,110 @@
+body {
+    background-image: url('/src/repeatingBackground.png');
+    background-repeat: repeat;
+}
+.map {
+    height: 50vh;
+}
+.map-container {
+    margin-bottom: 2em;
+}
+.logo-title {
+    position: absolute;
+    bottom: 0.25em;
+    left: 0.5em;
+    z-index: 1000;
+}
+.logo-title img {
+    margin: 0 0.5em;
+}
+.glass {
+    display: flex;
+    align-items: center;
+    padding: 0.25em 0.1em;
+
+    background: rgba(64, 162, 197, 0.05);
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+}
+.glassText {
+    color: rgba(64, 162, 197, 0.85);
+}
+.leaflet-control-attribution {
+    right: 0.25em;
+    bottom: 0.25em;
+
+    background: rgba(64, 162, 197, 0.05) !important;
+    border-radius: 8px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+}
+.map-filter {
+    color: #000000;
+    background-color: transparent;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+.map-filter a {
+    width: 33%;
+    margin-top: 4px;
+    padding: 4px;
+
+    background: rgba(64, 162, 197, 0.05);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+}
+.activities-filter-btn.active {
+    background-color: #40a2c5;
+    color: #1e3a98;
+}
+.community-filter-btn.active {
+    background-color: #cab993;
+    color: #55452c;
+}
+.food-filter-btn.active {
+    background-color: #824444;
+    color: #2e0404;
+}
+.list-group .card {
+    background: rgba(64, 162, 197, 0.05);
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+    border-top: none;
+}
+.list-group li {
+    background: rgba(64, 162, 197, 0.05);
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+}
+.findOnMap {
+    background: rgba(64, 162, 197, 0.75);
+    border-radius: 4px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+}
+.findOnMap:hover {
+    background: rgba(64, 162, 197, 0.75);
+    border-radius: 4px;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(9.8px);
+    -webkit-backdrop-filter: blur(9.8px);
+    border: 1px solid rgba(64, 162, 197, 0.24);
+}
