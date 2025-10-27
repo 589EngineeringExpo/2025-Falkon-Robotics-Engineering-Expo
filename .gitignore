@@ -1,5 +1,5 @@
 # User uploaded images
-server/web/public/src/uploads/*
+server/web/public/src/uploads
 
 # Logs
 logs
