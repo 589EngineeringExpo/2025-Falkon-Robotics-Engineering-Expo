@@ -536,6 +536,133 @@
  *                   type: string
  */
 
+/**
+ * @swagger
+ * /api/booths/getQueue:
+ *   get:
+ *     summary: Get the queue information for a booth
+ *     description: Returns the current queue status for a specific booth by booth ID.
+ *     tags:
+ *       - Booths
+ *     parameters:
+ *       - in: query
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The ID of the booth to get the queue for
+ *     responses:
+ *       200:
+ *         description: Queue information retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 queue:
+ *                   type: integer
+ *                   description: Number of people currently in the queue
+ *                   example: 15
+ *                 waitPerPerson:
+ *                   type: integer
+ *                   description: Estimated wait time per person in minutes
+ *                   example: 5
+ *       404:
+ *         description: Booth not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: Booth not found
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
+/**
+ * @swagger
+ * /api/booths/changeQueue:
+ *   post:
+ *     summary: Change the queue count for a booth
+ *     description: Adjusts the queue count for a specific booth by a given amount. Requires bearer authentication.
+ *     tags:
+ *       - Booths
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - boothId
+ *               - amount
+ *             properties:
+ *               boothId:
+ *                 type: integer
+ *                 description: ID of the booth to update the queue for
+ *                 example: 3
+ *               amount:
+ *                 type: integer
+ *                 description: The amount to increment or decrement the queue by (positive or negative)
+ *                 example: 1
+ *     responses:
+ *       200:
+ *         description: Queue updated successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 queue:
+ *                   type: integer
+ *                   description: Updated queue count
+ *                   example: 10
+ *                 waitPerPerson:
+ *                   type: integer
+ *                   description: Updated wait time per person in minutes
+ *                   example: 5
+ *       400:
+ *         description: Missing boothId or amount
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "boothId and amount are required"
+ *       404:
+ *         description: Booth not found
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ *                   example: "Booth not found"
+ *       500:
+ *         description: Internal server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 error:
+ *                   type: string
+ */
+
 const express = require("express");
 const router = express.Router();
 
@@ -568,7 +695,7 @@ const upload = multer({
     dest: tempUploadDir, // Temporary storage location
 });
 
-const { createBooth, getAllBooths, getBoothById, deleteBoothById, uploadBoothImage } = require("../db/booths"); // Importing booth functions
+const { createBooth, getAllBooths, getBoothById, deleteBoothById, uploadBoothImage, changeQueue, getQueue } = require("../db/booths"); // Importing booth functions
 const { checkAdmin, checkHost } = require("../middleware/checkAdmin"); // Middleware to check admin/host status
 const { isAdmin } = require("../db/authTokens");
 
@@ -643,6 +770,25 @@ router.post("/uploadBoothImage", passport.authenticate('bearer', { session: fals
     uploadBoothImage(boothID, image)
         .then(imageUrl => res.status(200).json({ success: true, imageURL: imageUrl }))
         .catch(err => res.status(500).json({ success: false, error: err.message }));
+});
+
+router.get("/getQueue", (req, res) => {
+    getQueue(req.query.id)
+        .then(queue => {
+            if (queue) {
+                res.status(200).json(queue);
+            } else {
+                res.status(404).json({ error: "Booth not found" });
+            }
+        })
+        .catch(err => res.status(500).json({ error: err.message }));
+});
+
+router.post("/changeQueue", passport.authenticate('bearer', { session: false }), (req, res) => {
+    const { boothId, amount } = req.body;
+    changeQueue(boothId, amount)
+        .then(updatedBooth => res.status(200).json(updatedBooth))
+        .catch(err => res.status(500).json({ error: err.message }));
 });
 
 module.exports = router;

@@ -100,7 +100,7 @@
                             <div class="input-group-prepend">
                                 <span class="input-group-text">Booth ID</span>
                             </div>
-                            <input type="text" class="form-control" placeholder="Booth ID" id="editBoothID">
+                            <input type="number" class="form-control" placeholder="Booth ID" id="editBoothID">
                         </div>
                         <p id="editBoothName"></p>
                         <div class="map input-group mb-3">
@@ -156,6 +156,40 @@
                         <h2 id="adminTokenOutput"></h2>
                         <p id="adminTokenNameOutput" class="text-muted"></p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Booth Queues -->
+     <div class="container py-5 volunteerInputs">
+        <h2>Booth Queues</h2>
+        <div>
+            <button class="btn btn-outline-secondary my-3" id="setBoothQueue" data-toggle="collapse" data-target="#changeQueueCollapse">Change Booth Queues</button>
+            <div class="collapse" id="changeQueueCollapse">
+                <div class="card card-body">
+                    <div class="input-group mb-3">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Booth ID</span>
+                        </div>
+                        <input type="number" class="form-control" placeholder="Enter Booth ID" id="boothIdInput">
+                    </div>
+                    <p id="editQueueName"></p>
+                    <div class="input-group mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="queueLengthOptions" id="queueLengthOptions1" value="queueLength0">
+                            <label class="form-check-label" for="queueLengthOptions1"><span class="badge badge-pill badge-dark">No Wait</span> (0-3 People In Line)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="queueLengthOptions" id="queueLengthOptions2" value="queueLength1">
+                            <label class="form-check-label" for="queueLengthOptions2"><span class="badge badge-pill badge-warning">Short Wait</span> (4-10 People In Line)</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="queueLengthOptions" id="queueLengthOptions3" value="queueLength2">
+                            <label class="form-check-label" for="queueLengthOptions3"><span class="badge badge-pill badge-danger">Long Wait</span> (11+ People In Line)</label>
+                        </div>
+                    </div>
+                    <button class="btn btn-primary mt-3" id="editQueueSubmitBtn">Set Queue Length</button>
                 </div>
             </div>
         </div>
