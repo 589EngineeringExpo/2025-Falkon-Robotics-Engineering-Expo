@@ -99,6 +99,42 @@ async function setFields(apiKey) {
         }
     }
 
+    // Allows the toggling of booth wait status
+    async function toggleBoothWait(boothId) {
+        console.log("Toggling booth wait for booth ID:", boothId);
+        fetch(`/api/booths/getQueue?id=${boothId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then(data => {
+            console.log(data);
+            let currentQueue = data.activities.queue;
+            
+            fetch(`/api/booths/changeQueue`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    boothId: boothId,
+                    amount: (currentQueue + 1) % 3 // Cycle through 0, 1, 2
+                })
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Booth queue toggled successfully");
+                    getBoothList(); // Refresh booth list to show updated queue
+                }
+            });
+        });
+    }
+
     // On click of Get All Booths button, fetch and display booth list
     document.getElementById('getBoothsBtn').addEventListener('click', getBoothList);
     function getBoothList() {
@@ -183,6 +219,12 @@ async function setFields(apiKey) {
                 }
                 queueSpan.innerText = boothQueue;
 
+                // Booth Queue Toggle Button
+                const queueToggleBtn = document.createElement('button');
+                queueToggleBtn.className = 'btn btn-sm btn-secondary float-right mx-2';
+                queueToggleBtn.innerText = 'Toggle Queue';
+                queueToggleBtn.addEventListener('click', () => toggleBoothWait(booth.id));
+
                 // If an indicator is needed for editing this booth
                 console.log((booth.location[0].x + " " + booth.location[0].y))
                 let needsLocationSpan = document.createElement('span');
@@ -218,6 +260,7 @@ async function setFields(apiKey) {
                 li.appendChild(typeSpan);
                 li.appendChild(queueSpan);
                 li.appendChild(needsLocationSpan);
+                li.appendChild(queueToggleBtn);
                 li.appendChild(deleteBtn);
                 boothList.appendChild(li);
             });
