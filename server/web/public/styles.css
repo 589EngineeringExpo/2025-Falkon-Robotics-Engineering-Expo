@@ -114,3 +114,6 @@ body {
     -webkit-backdrop-filter: blur(9.8px);
     border: 1px solid rgba(64, 162, 197, 0.24);
 }
+.socials {
+    display: inline-block;
+}
