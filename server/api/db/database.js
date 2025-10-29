@@ -42,7 +42,7 @@ const boothSchema = new mongoose.Schema({
     createdBy: { type: String, required: true, default: "Unnamed Creator" },
     location: { type: Array, required: true, default: [{x: 0, y: 0}] },
     boothRunners: { type: Array, required: true, default: [] },
-    boothImage: { type: String, required: true, default: "https://pub-8f769214a6e4406c9614b19c1746938b.r2.dev/example.png" },
+    boothImage: { type: String, required: true, default: "/src/placeholderImage.png" },
     boothCategory: { type: Number, required: true, default: "0" }, // 0 - Community, 1 - Food, 2 - Activities, 3 - Popups
     organization: { type: String, required: false, default: "Unspecified" },
     menu: { type: Array, required: false},

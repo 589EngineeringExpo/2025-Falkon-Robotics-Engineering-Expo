@@ -164,6 +164,16 @@ function findOnMap(lat, long) {
     console.log("Refreshing booth maps for location:", lat, long);
     document.getElementsByClassName("map")[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
     map.setView([lat, long], 21);
+
+    // Find the marker at the given location and open its popup
+    map.eachLayer(function(layer) {
+        if (layer instanceof L.Marker && !(layer instanceof L.CircleMarker)) {
+            const markerLatLng = layer.getLatLng();
+            if (markerLatLng.lat === lat && markerLatLng.lng === long) {
+                layer.openPopup();
+            }
+        }
+    });
 }
 function toggleActivities() {
     activitiesVisible = !activitiesVisible;
@@ -243,20 +253,56 @@ fetch('/api/booths/all')
             const foodList = document.getElementById("food-info");
             const communityList = document.getElementById("community-info");
             const boothItem = document.createElement("li");
+            const queueSpan = document.createElement("span");
             const moreButton = document.createElement("button");
             moreButton.type = "button";
             moreButton.classList.add("btn", "btn-link", "p-0");
-            moreButton.style.float = "none";
+            moreButton.style.position = "relative";
+            moreButton.style.marginLeft = "auto";
             moreButton.setAttribute('data-toggle', 'collapse');
             moreButton.setAttribute('data-target', `#booth-details-${booth.id}`);
             moreButton.addEventListener('click', () => updateBoothDetails(booth.id));
+            moreButton.addEventListener('pointerdown', () => {
+                if (window.navigator && window.navigator.vibrate) {
+                    window.navigator.vibrate(50);
+                }
+            });
             moreButton.innerText = " More";
-            boothItem.classList.add("list-group-item", "d-flex", "align-items-center", "justify-content-between");
+            boothItem.classList.add("list-group-item", "d-flex", "align-items-center");
+            boothItem.style.flexWrap = "wrap";
+            const queueHexMap = {
+                0: '#353a40', // No Wait
+                1: '#f4c427', // Short Wait
+                2: '#ca4447', // Long Wait
+            };
+            const queueHex = queueHexMap[booth.activities.queue];
+            queueSpan.className = 'badge badge-pill me-2';
+            queueSpan.style.backgroundColor = queueHex;
+            queueSpan.style.color = '#ffffff';
+            queueSpan.style.marginLeft = "1em"
+            
+            let boothQueue = '';
+            if (booth.activities.queue == 0) {
+                boothQueue = 'No Wait';
+            }
+            else if (booth.activities.queue == 1) {
+                boothQueue = 'Short Wait';
+            }
+            else if (booth.activities.queue == 2) {
+                boothQueue = 'Long Wait';
+            }
+            else {
+                boothQueue = 'Unknown Queue';
+            }
+            queueSpan.innerText = boothQueue;
             const nameSpan = document.createElement("span");
             nameSpan.textContent = booth.name;
-
+            nameSpan.style.display = "block";
+            nameSpan.style.flex = "0 1 auto";
+            
             boothItem.style.listStyleType = "none";
             boothItem.appendChild(nameSpan);
+            boothItem.appendChild(queueSpan);
             boothItem.appendChild(moreButton);
             if (booth.boothCategory == 0) {
                 communityList.appendChild(boothItem);

@@ -99,6 +99,42 @@ async function setFields(apiKey) {
         }
     }
 
+    // Allows the toggling of booth wait status
+    async function toggleBoothWait(boothId) {
+        console.log("Toggling booth wait for booth ID:", boothId);
+        fetch(`/api/booths/getQueue?id=${boothId}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+        }).then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+        }).then(data => {
+            console.log(data);
+            let currentQueue = data.activities.queue;
+            
+            fetch(`/api/booths/changeQueue`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + apiKey
+                },
+                body: JSON.stringify({
+                    boothId: boothId,
+                    amount: (currentQueue + 1) % 3 // Cycle through 0, 1, 2
+                })
+            }).then(response => {
+                if (response.ok) {
+                    console.log("Booth queue toggled successfully");
+                    getBoothList(); // Refresh booth list to show updated queue
+                }
+            });
+        });
+    }
+
     // On click of Get All Booths button, fetch and display booth list
     document.getElementById('getBoothsBtn').addEventListener('click', getBoothList);
     function getBoothList() {
@@ -138,6 +174,18 @@ async function setFields(apiKey) {
                 typeSpan.className = 'badge badge-pill me-2';
                 typeSpan.style.backgroundColor = hex;
                 typeSpan.style.color = '#ffffff';
+                // Booth Queue
+                const queueSpan = document.createElement('span');
+                const queueHexMap = {
+                    0: '#353a40', // No Wait
+                    1: '#f4c427', // Short Wait
+                    2: '#ca4447', // Long Wait
+                };
+                const queueHex = queueHexMap[booth.activities.queue];
+                queueSpan.className = 'badge badge-pill me-2';
+                queueSpan.style.backgroundColor = queueHex;
+                queueSpan.style.color = '#ffffff';
+
                 let boothType = '';
                 if (booth.boothCategory == 0) {
                     boothType = 'Community';
@@ -155,6 +203,28 @@ async function setFields(apiKey) {
                     boothType = 'Uncategorized';
                 }
                 typeSpan.innerText = boothType;
+
+                let boothQueue = '';
+                if (booth.activities.queue == 0) {
+                    boothQueue = 'No Wait';
+                }
+                else if (booth.activities.queue == 1) {
+                    boothQueue = 'Short Wait';
+                }
+                else if (booth.activities.queue == 2) {
+                    boothQueue = 'Long Wait';
+                }
+                else {
+                    boothQueue = 'Unknown Queue';
+                }
+                queueSpan.innerText = boothQueue;
+
+                // Booth Queue Toggle Button
+                const queueToggleBtn = document.createElement('button');
+                queueToggleBtn.className = 'btn btn-sm btn-secondary float-right mx-2';
+                queueToggleBtn.innerText = 'Toggle Queue';
+                queueToggleBtn.addEventListener('click', () => toggleBoothWait(booth.id));
+
                 // If an indicator is needed for editing this booth
                 console.log((booth.location[0].x + " " + booth.location[0].y))
                 let needsLocationSpan = document.createElement('span');
@@ -188,7 +258,9 @@ async function setFields(apiKey) {
                 li.appendChild(IDSpan);
                 li.appendChild(nameSpan);
                 li.appendChild(typeSpan);
+                li.appendChild(queueSpan);
                 li.appendChild(needsLocationSpan);
+                li.appendChild(queueToggleBtn);
                 li.appendChild(deleteBtn);
                 boothList.appendChild(li);
             });
@@ -508,6 +580,81 @@ async function setFields(apiKey) {
             document.getElementById('adminCreateName').value = '';
             document.getElementById('adminTokenOutput').innerText = data.tokenData.token;
             document.getElementById('adminTokenNameOutput').innerHTML = data.tokenData.assignedTo;
+        });
+    });
+
+    // Booth Queue
+
+    // On input of a booth ID in edit booth, fetch and fill data
+    document.getElementById('boothIdInput').addEventListener('input', function() {
+        let boothID = parseInt(document.getElementById('boothIdInput').value);
+        editQueueName = document.getElementById('editQueueName');
+        if (boothID){
+            fetch(`/api/booths/get?id=${boothID}`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }).then(response => {
+                if (response.ok) {
+                    return response.json();
+                }
+            }).then(data => {
+                if (data.length > 0) {
+                    editQueueName.innerText = `Editing Booth: ${data[0].name}`;
+                }
+                else {
+                    editQueueName.innerText = `No booth found with ID ${boothID}`;
+                }
+            });
+        }
+        else {
+            editQueueName.innerText = '';
+        }
+    });
+
+    // Submit booth queue update
+    document.getElementById("editQueueSubmitBtn").addEventListener('click', function() {
+        let boothID = parseInt(document.getElementById('boothIdInput').value);
+        let queueLength;
+        if (document.getElementById('queueLengthOptions1').checked) {
+            queueLength = 0;
+        }
+        else if (document.getElementById('queueLengthOptions2').checked) {
+            queueLength = 1;
+        }
+        else if (document.getElementById('queueLengthOptions3').checked) {
+            queueLength = 2;
+        }
+        else {
+            return; // No option selected
+        }
+
+        console.log(boothID, queueLength);
+
+        fetch(`/api/booths/changeQueue`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + apiKey
+            },
+            body: JSON.stringify({
+                boothId: boothID,
+                amount: queueLength
+            })
+        }).then(response => {
+            if (response.ok) {
+                console.log(response.json());
+                document.getElementById("boothIdInput").value = '';
+                document.getElementById("queueLengthOptions1").checked = false;
+                document.getElementById("queueLengthOptions2").checked = false;
+                document.getElementById("queueLengthOptions3").checked = false;
+                document.getElementById("editQueueName").innerText = 'Edited Successfully!';
+                getBoothList();
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            document.getElementById("editQueueName").innerText = 'Error Editing Booth!';
         });
     });
 }
