@@ -9,7 +9,7 @@ async function createBooth(data) {
 }
 //all .save() is just storing it in the database and return just returns it
 async function getAllBooths() {
-    const booths = await Booth.find().select("id name location boothCategory");
+    const booths = await Booth.find().select("id name location boothCategory activities.queue");
     booths.sort((a, b) => a.id - b.id);
     return booths;
 }
@@ -20,11 +20,11 @@ async function getBoothById(id) {
 //Booth.findOneAndUpdate is a mongoose method that lets the programmer find then select and change an object
 async function changeQueue(boothId, amount) {
   // amount can be positive (increment) or negative (decrement)
-  const booth = await Booth.findOneAndUpdate(
+const booth = await Booth.findOneAndUpdate(
     { id: boothId },
-    { $inc: { "activities.queue": amount } },
+    { $set: { "activities.queue": amount } },
     { new: true }
-  );
+);
 
   // Safety: doesn't allow queue < 0
   if (booth.activities.queue < 0) {
