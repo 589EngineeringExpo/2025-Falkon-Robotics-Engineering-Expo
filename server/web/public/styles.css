@@ -117,3 +117,7 @@ body {
 .socials {
     display: inline-block;
 }
+.sponsor img {
+    height: 8em;
+    margin: 1em;
+}
