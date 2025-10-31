@@ -34,6 +34,10 @@ Made with ❤️ by Falkon Robotics' members.
 - Press "Save"
 - Next to the new connection (Default name: localhost:27017), press "Connect"
 - Navigate to `expo` under the connection
+
+5. IMPORTANT
+- Generate a temporary admin token via `npm run generateToken`
 - Open any of the folders to find current data in the database
 - (Use Ctrl + R to rescan the database for new or changed entries)
+
 
