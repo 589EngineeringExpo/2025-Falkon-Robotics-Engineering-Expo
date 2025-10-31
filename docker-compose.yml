@@ -1,0 +1,32 @@
+services:
+  expo:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: expo
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./:/usr/src/app
+      - /usr/src/app/node_modules
+    working_dir: /usr/src/app
+    command: npm start
+    depends_on:
+      - mongo
+
+  mongo:
+    image: mongo:8.0
+    container_name: mongodb
+    restart: always
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo-data:/data/db
+      - mongo-config:/data/configdb
+
+volumes:
+  mongo-data:
+    driver: local
+  mongo-config:
+    driver: local
