@@ -37,7 +37,5 @@ Made with ❤️ by Falkon Robotics' members.
 
 5. IMPORTANT
 - Generate a temporary admin token via `npm run generateToken`
-- Open any of the folders to find current data in the database
-- (Use Ctrl + R to rescan the database for new or changed entries)
 
 
