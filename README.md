@@ -1,6 +1,6 @@
 # Falkon Robotics' Engineering Expo 2025
 
-README IN CONSTRUCTION
+README MAY BE OUTDATED
 
 This website was meant to guide guests through the Engineering Expo event.
 
@@ -36,3 +36,4 @@ Made with ❤️ by Falkon Robotics' members.
 - Navigate to `expo` under the connection
 - Open any of the folders to find current data in the database
 - (Use Ctrl + R to rescan the database for new or changed entries)
+
