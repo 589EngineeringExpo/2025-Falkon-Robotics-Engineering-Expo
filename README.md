@@ -1,6 +1,20 @@
+
 # Falkon Robotics' Engineering Expo 2025
 
-README MAY BE OUTDATED
+## Deployment
+To run this server for production...
+1. `git clone https://github.com/589EngineeringExpo/2025-Falkon-Robotics-Engineering-Expo.git expo`
+2. `cd expo`
+3. `docker compose up -d`
+4. `docker ps`
+5. Note down the container ID for 2025-falkon-robotics-engineering-expo-main-expo
+6. `docker exec -it ID_OF_CONTAINER sh` - Replace 	ID_OF_CONTAINER with the actual ID (i.e docker exec -it 245cf82e29ce sh)
+7. `npm run generateToken` - Copy down the admin token it gives you, and store it securely (It will look something like zzxq0cl6) (random 8 character alphanumeric token)
+8. `exit`
+
+The server will run on port 80
+
+## Any installation instructions below this MAY BE OUTDATED
 
 This website was meant to guide guests through the Engineering Expo event.
 
@@ -37,5 +51,6 @@ Made with ❤️ by Falkon Robotics' members.
 
 5. IMPORTANT
 - Generate a temporary admin token via `npm run generateToken`
+
 
 
